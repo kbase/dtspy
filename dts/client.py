@@ -100,20 +100,25 @@ class Client(object):
     def search(self,
                database = None,
                query = None,
+               status = None,
                offset = 0,
                limit = None,
     ):
         """
 `client.search(database = None,
                query = None,
+               status = None,
                offset = 0,
                limit = None) -> `list` of `frictionless.DataResource` objects
 
 * Performs a synchronous search of the database with the given name using the
   given query string.
 Optional arguments:
-    * offset: A 0-based index from which to start retrieving results (default: 0)
-    * limit: If given, the maximum number of results to retrieve.
+    * status: filters for files based on their status:
+        * `"staged"` means "search only for files that are already in the source database staging area"
+        * `"archived"` means "search only for files that are archived and not staged"
+    * offset: a 0-based index from which to start retrieving results (default: 0)
+    * limit: if given, the maximum number of results to retrieve
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
@@ -130,6 +135,7 @@ Optional arguments:
             params = {
                 'database': database,
                 'query':    query,
+                'status':   status,
                 'offset':   offset,
                 'limit':    limit,
             }
@@ -207,12 +213,11 @@ Optional arguments:
             logger.error(f'Other error occurred: {err}')
             return None
         else:
-            tickets = {}
             results = response.json()
             return TransferStatus(
                 id                    = response['id'],
                 status                = response['status'],
-                message               = response['message'] or None,
+                message               = response['message'] if 'message' in response or None,
                 num_files             = response['num_files'],
                 num_files_transferred = response['num_files_transferred'],
             )
