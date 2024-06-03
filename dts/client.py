@@ -14,6 +14,7 @@ from urllib.error import (
 )
 
 logger = logging.getLogger('dts')
+api_version = 1
 
 class KBaseAuth(AuthBase):
     """Attaches a KBase-sensible Authorization header to the given Request object."""
@@ -21,7 +22,8 @@ class KBaseAuth(AuthBase):
         self.api_key = api_key
 
     def __call__(self, r):
-        r.headers['Authorization'] = base64.b64encode(bytes(self.api_key, 'utf-8'))
+        token = base64.b64encode(bytes(self.api_key + '\n', 'utf-8'))
+        r.headers['Authorization'] = f'Bearer {token.decode('utf-8')}'
         return r
 
 class Client(object):
@@ -54,15 +56,14 @@ class Client(object):
             raise TypeError('port must be an integer')
         self.auth = KBaseAuth(api_key)
         if port:
-            self.uri = server + ':' + str(port)
-        else:
-            self.uri = server
+            server = f'{server}:{port}'
 
         # perform a root query and fill in some information
-        response = requests.get(self.uri, auth = self.auth)
+        response = requests.get(server, auth = self.auth)
         response.raise_for_status()
 
         result = response.json()
+        self.uri = f'{server}/api/v{api_version}'
         self.name = result['name']
         self.version = result['version']
 
@@ -139,7 +140,7 @@ Optional arguments:
                 'offset':   offset,
                 'limit':    limit,
             }
-            response = requests.get(url=f'{self.uri}/files/', params=params, auth=self.auth)
+            response = requests.get(url=f'{self.uri}/files', params=params, auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
             logger.error(f'HTTP error occurred: {http_err}')
@@ -217,7 +218,7 @@ Optional arguments:
             return TransferStatus(
                 id                    = response['id'],
                 status                = response['status'],
-                message               = response['message'] if 'message' in response or None,
+                message               = response['message'] if 'message' in response else None,
                 num_files             = response['num_files'],
                 num_files_transferred = response['num_files_transferred'],
             )
