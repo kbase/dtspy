@@ -110,36 +110,46 @@ class Client(object):
                query = None,
                status = None,
                offset = 0,
-               limit = None) -> `list` of `frictionless.DataResource` objects
+               limit = None,
+               specific = None) -> `list` of `frictionless.DataResource` objects
 
 * Performs a synchronous search of the database with the given name using the
   given query string.
 Optional arguments:
+    * query: a search string that is directly interpreted by the database
     * status: filters for files based on their status:
         * `"staged"` means "search only for files that are already in the source database staging area"
-        * `"archived"` means "search only for files that are archived and not staged"
+        * `"unstaged"` means "search only for files that are not staged"
     * offset: a 0-based index from which to start retrieving results (default: 0)
     * limit: if given, the maximum number of results to retrieve
+    * specific: a dictionary containing database-specific search parameters
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
+        if type(query) != str:
+            raise RuntimeError('search: missing or invalid query.')
         if type(database) != str:
             raise TypeError('search: database must be a string.')
+        if status and status not in ['staged', 'unstaged']:
+            raise TypeError(f'search: invalid status: {status}.')
         if type(offset) != int or offset < 0:
-            raise TypeError('search: invalid offset: %s.'%offset)
+            raise TypeError(f'search: invalid offset: {offset})
         if limit:
             if type(limit) != int:
                 raise TypeError('search: limit must be an int.')
             elif limit < 1:
                 raise TypeError(f'search: invalid number of retrieved results: {N}')
+        if specific and type(specific) != dict:
+            raise TypeError('search: specific must be a dict.')
         try:
             params = {
                 'database': database,
                 'query':    query,
-                'status':   status,
-                'offset':   offset,
-                'limit':    limit,
             }
+            for name in ['status', 'offset', 'limit', 'specific']:
+                val = eval(name)
+                if val:
+                    params[name] = val
             response = requests.get(url=f'{self.uri}/files', params=params, auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
