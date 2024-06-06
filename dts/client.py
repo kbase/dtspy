@@ -1,6 +1,5 @@
 import base64
 from frictionless.resources import JsonResource
-import io
 import requests
 from requests.auth import AuthBase
 import logging
@@ -104,6 +103,7 @@ class Client(object):
                status = None,
                offset = 0,
                limit = None,
+               specific = None,
     ):
         """
 `client.search(database = None,
@@ -133,7 +133,7 @@ Optional arguments:
         if status and status not in ['staged', 'unstaged']:
             raise TypeError(f'search: invalid status: {status}.')
         if type(offset) != int or offset < 0:
-            raise TypeError(f'search: invalid offset: {offset})
+            raise TypeError(f'search: invalid offset: {offset}.')
         if limit:
             if type(limit) != int:
                 raise TypeError('search: limit must be an int.')
