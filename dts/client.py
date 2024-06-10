@@ -104,6 +104,7 @@ class Client(object):
                offset = 0,
                limit = None,
                specific = None,
+               extra = None,
     ):
         """
 `client.search(database = None,
@@ -111,7 +112,8 @@ class Client(object):
                status = None,
                offset = 0,
                limit = None,
-               specific = None) -> `list` of `frictionless.DataResource` objects
+               specific = None,
+               extra = None) -> `list` of `frictionless.DataResource` objects
 
 * Performs a synchronous search of the database with the given name using the
   given query string.
@@ -122,7 +124,8 @@ Optional arguments:
         * `"unstaged"` means "search only for files that are not staged"
     * offset: a 0-based index from which to start retrieving results (default: 0)
     * limit: if given, the maximum number of results to retrieve
-    * specific: a dictionary containing database-specific search parameters
+    * specific: a dictionary mapping database-specific search parameters to their values
+    * extra: a list containing database-specific search result fields to be added to returned resources
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
@@ -146,14 +149,25 @@ Optional arguments:
                 'database': database,
                 'query':    query,
             }
-            for name in ['status', 'offset', 'limit', 'specific']:
+            for name in ['status', 'offset', 'limit']:
                 val = eval(name)
                 if val:
                     params[name] = val
-            response = requests.get(url=f'{self.uri}/files', params=params, auth=self.auth)
+            if specific:
+                params['specific'] = specific
+                response = requests.post(url=f'{self.uri}/files',
+                                         json=params,
+                                         auth=self.auth)
+            else:
+                response = requests.get(url=f'{self.uri}/files',
+                                        params=params,
+                                        auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
             logger.error(f'HTTP error occurred: {http_err}')
+            return None
+        except requests.exceptions.HTTPError as err:
+            logger.error(f'HTTP error occurred: {err}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -181,16 +195,27 @@ Optional arguments:
             raise TypeError('transfer: destination database name must be a string.')
         if type(file_ids) != list:
             raise TypeError('batch: sequences must be a list of string file IDs.')
+        response = requests.post(url=f'{self.uri}/transfers',
+                                 json={
+                                     'source':      source,
+                                     'destination': destination,
+                                     'file_ids':    file_ids,
+                                 },
+                                 auth=self.auth)
         try:
-            response = requests.post(f'{self.uri}/transfers',
-                                     data={
-                                         source:      source,
-                                         destination: destination,
-                                         file_ids:    file_ids,
-                                     })
+            response = requests.post(url=f'{self.uri}/transfers',
+                                     json={
+                                         'source':      source,
+                                         'destination': destination,
+                                         'file_ids':    file_ids,
+                                     },
+                                     auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
             logger.error(f'HTTP error occurred: {http_err}')
+            return None
+        except requests.exceptions.HTTPError as err:
+            logger.error(f'HTTP error occurred: {err}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
