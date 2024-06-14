@@ -195,13 +195,6 @@ Optional arguments:
             raise TypeError('transfer: destination database name must be a string.')
         if type(file_ids) != list:
             raise TypeError('batch: sequences must be a list of string file IDs.')
-        response = requests.post(url=f'{self.uri}/transfers',
-                                 json={
-                                     'source':      source,
-                                     'destination': destination,
-                                     'file_ids':    file_ids,
-                                 },
-                                 auth=self.auth)
         try:
             response = requests.post(url=f'{self.uri}/transfers',
                                      json={
