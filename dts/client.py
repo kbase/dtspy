@@ -178,11 +178,13 @@ Optional arguments:
     def transfer(self,
                  file_ids = None,
                  source = None,
-                 destination = None):
+                 destination = None,
+                 timeout = None):
         """
 `client.transfer(file_ids = None,
                  source = None,
-                 destination = None) -> UUID
+                 destination = None,
+                 timeout = None) -> UUID
 
 * Submits a request to transfer files from a source to a destination database. the
   files in the source database are identified by a list of string file_ids.
@@ -194,7 +196,9 @@ Optional arguments:
         if type(destination) != str:
             raise TypeError('transfer: destination database name must be a string.')
         if type(file_ids) != list:
-            raise TypeError('batch: sequences must be a list of string file IDs.')
+            raise TypeError('transfer: file_ids must be a list of string file IDs.')
+        if timeout and type(timeout) != int and type(timeout) != float:
+            raise TypeError('transfer: timeout must be a number of seconds.')
         try:
             response = requests.post(url=f'{self.uri}/transfers',
                                      json={
@@ -202,7 +206,8 @@ Optional arguments:
                                          'destination': destination,
                                          'file_ids':    file_ids,
                                      },
-                                     auth=self.auth)
+                                     auth=self.auth,
+                                     timeout=timeout)
             response.raise_for_status()
         except HTTPError as http_err:
             logger.error(f'HTTP error occurred: {http_err}')
