@@ -216,8 +216,8 @@ Optional arguments:
         else:
             return uuid.UUID(response.json()["id"])
 
-    def transferStatus(self, id):
-        """`client.transferStatus(id)` -> TransferStatus
+    def transfer_status(self, id):
+        """`client.transfer_status(id)` -> TransferStatus
 
 * Returns status information for the transfer with the given identifier.
   Possible statuses are:
@@ -233,7 +233,8 @@ Optional arguments:
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         try:
-            response = requests.get(f'{self.uri}/transfers/{str(id)}')
+            response = requests.get(url=f'{self.uri}/transfers/{str(id)}',
+                                    auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
             logger.error(f'HTTP error occurred: {http_err}')
@@ -244,23 +245,24 @@ Optional arguments:
         else:
             results = response.json()
             return TransferStatus(
-                id                    = response['id'],
-                status                = response['status'],
-                message               = response['message'] if 'message' in response else None,
-                num_files             = response['num_files'],
-                num_files_transferred = response['num_files_transferred'],
+                id                    = results['id'],
+                status                = results['status'],
+                message               = results['message'] if 'message' in results else None,
+                num_files             = results['num_files'],
+                num_files_transferred = results['num_files_transferred'],
             )
 
-    def deleteTransfer(self, id):
+    def cancel_transfer(self, id):
         """
-`client.deleteTransfer(id) -> None
+`client.cancel_transfer(id) -> None
 
 * Deletes a file transfer, canceling
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         try:
-            response = requests.delete(f'{self.uri}/transfers/{str(id)}')
+            response = requests.delete(url=f'{self.uri}/transfers/{str(id)}',
+                                       auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
             logger.error(f'HTTP error occurred: {http_err}')
