@@ -104,7 +104,6 @@ class Client(object):
                offset = 0,
                limit = None,
                specific = None,
-               extra = None,
     ):
         """
 `client.search(database = None,
@@ -112,8 +111,7 @@ class Client(object):
                status = None,
                offset = 0,
                limit = None,
-               specific = None,
-               extra = None) -> `list` of `frictionless.DataResource` objects
+               specific = None) -> `list` of `frictionless.DataResource` objects
 
 * Performs a synchronous search of the database with the given name using the
   given query string.
@@ -125,7 +123,6 @@ Optional arguments:
     * offset: a 0-based index from which to start retrieving results (default: 0)
     * limit: if given, the maximum number of results to retrieve
     * specific: a dictionary mapping database-specific search parameters to their values
-    * extra: a list containing database-specific search result fields to be added to returned resources
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
