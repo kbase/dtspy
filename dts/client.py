@@ -229,6 +229,62 @@ Optional arguments:
             return None
         return [JsonResource(r) for r in response.json()['resources']]
 
+    def fetch_metadata(self,
+               database = None,
+               ids = None,
+               offset = 0,
+               limit = None,
+    ):
+        """
+`client.fetch_metadata(database = None,
+               ids = None,
+               offset = 0,
+               limit = None) -> `list` of `frictionless.DataResource` objects
+
+* Fetches metadata for the files with the specified IDs within the specified
+  database.
+Optional arguments:
+    * offset: a 0-based index from which to start retrieving results (default: 0)
+    * limit: if given, the maximum number of results to retrieve
+"""
+        if not self.uri:
+            raise RuntimeError('dts.Client: not connected.')
+        if type(ids) != list or len(ids) == 0:
+            raise RuntimeError('search: missing or invalid file IDs.')
+        if type(database) != str:
+            raise TypeError('search: database must be a string.')
+        if type(offset) != int or offset < 0:
+            raise TypeError(f'search: invalid offset: {offset}.')
+        if limit:
+            if type(limit) != int:
+                raise TypeError('search: limit must be an int.')
+            elif limit < 1:
+                raise TypeError(f'search: invalid number of retrieved results: {N}')
+        try:
+            params = {
+                'database': database,
+                'ids':    ','.join(ids),
+            }
+            for name in ['offset', 'limit']:
+                val = eval(name)
+                if val:
+                    params[name] = val
+            response = requests.get(url=f'{self.uri}/files/by-id',
+                                    params=params,
+                                    auth=self.auth)
+            response.raise_for_status()
+        except HTTPError as http_err:
+            logger.error(f'HTTP error occurred: {http_err}')
+            return None
+        except requests.exceptions.HTTPError as err:
+            logger.error(f'HTTP error occurred: {err}')
+            return None
+        except Exception as err:
+            logger.error(f'Other error occurred: {err}')
+            return None
+        else:
+            return [JsonResource(r) for r in response.json()['resources']]
+
     def transfer(self,
                  file_ids = None,
                  source = None,
