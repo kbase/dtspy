@@ -8,7 +8,7 @@ class TestClient(unittest.TestCase):
     """Unit tests for dts.client.Client"""
 
     def setUp(self):
-        if 'DTS_KBASE_DEV_TOKEN' not in os.environ:
+        if not os.getenv('DTS_KBASE_DEV_TOKEN'):
             raise ValueError('Environment variable DTS_KBASE_DEV_TOKEN must be set!')
         self.token = os.getenv('DTS_KBASE_DEV_TOKEN')
         self.server = "https://lb-dts.staging.kbase.us"
