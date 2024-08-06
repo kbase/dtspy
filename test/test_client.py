@@ -61,5 +61,18 @@ class TestClient(unittest.TestCase):
         self.assertTrue(any([result.to_dict()['extra']['img_taxon_oid'] == int(taxon_oid)
                              for result in results]))
 
+    def test_fetch_jdp_metadata(self):
+        client = dts.Client(api_key = self.token, server = self.server)
+        resources = client.fetch_metadata(database = 'jdp',
+                                          ids = ['JDP:6101cc0f2b1f2eeea564c978',
+                                                 'JDP:613a7baa72d3a08c9a54b32d',
+                                                 'JDP:61412246cc4ff44f36c8913d'])
+        self.assertTrue(isinstance(resources, list))
+        self.assertTrue(len(resources) == 3)
+        resources = [r.to_dict() for r in resources]
+        self.assertEqual('JDP:6101cc0f2b1f2eeea564c978', resources[0]['id'])
+        self.assertEqual('JDP:613a7baa72d3a08c9a54b32d', resources[1]['id'])
+        self.assertEqual('JDP:61412246cc4ff44f36c8913d', resources[2]['id'])
+
 if __name__ == '__main__':
     unittest.main()
