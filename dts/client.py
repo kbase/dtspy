@@ -38,6 +38,8 @@ class Client(object):
             self.connect(server = server, port = port, api_key = api_key)
         else:
             self.uri = None
+            self.name = None
+            self.version = None
 
     def connect(self,
                 api_key = None,
