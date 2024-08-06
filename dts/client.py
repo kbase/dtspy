@@ -21,8 +21,9 @@ class KBaseAuth(AuthBase):
         self.api_key = api_key
 
     def __call__(self, r):
-        token = base64.b64encode(bytes(self.api_key + '\n', 'utf-8'))
-        r.headers['Authorization'] = f'Bearer {token.decode('utf-8')}'
+        b64_token = base64.b64encode(bytes(self.api_key + '\n', 'utf-8'))
+        token = b64_token.decode('utf-8')
+        r.headers['Authorization'] = f'Bearer {token}'
         return r
 
 class Client(object):
