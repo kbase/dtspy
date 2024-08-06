@@ -4,6 +4,7 @@ certifi==2024.2.2
 chardet==5.2.0
 charset-normalizer==3.3.2
 click==8.1.7
+coverage==7.6.0
 frictionless==5.17.0
 humanize==4.9.0
 idna==3.7
