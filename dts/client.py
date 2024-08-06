@@ -289,15 +289,20 @@ Optional arguments:
                  file_ids = None,
                  source = None,
                  destination = None,
+                 description = None,
                  timeout = None):
         """
 `client.transfer(file_ids = None,
                  source = None,
                  destination = None,
+                 description = None,
                  timeout = None) -> UUID
 
 * Submits a request to transfer files from a source to a destination database. the
   files in the source database are identified by a list of string file_ids.
+Optional arguments:
+    * description: a string containing Markdown text describing the transfer
+      (helpful for providing instructions to process the payload at its destination)
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
@@ -314,6 +319,7 @@ Optional arguments:
                                      json={
                                          'source':      source,
                                          'destination': destination,
+                                         'description': description,
                                          'file_ids':    file_ids,
                                      },
                                      auth=self.auth,
