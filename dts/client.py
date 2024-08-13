@@ -127,34 +127,37 @@ Optional arguments:
     * limit: if given, the maximum number of results to retrieve
     * specific: a dictionary mapping database-specific search parameters to their values
 """
+        params = {
+            'database': database,
+            'query':    query,
+        }
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         if not isinstance(query, str):
             raise RuntimeError('search: missing or invalid query.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
-        if status and status not in ['staged', 'unstaged']:
-            raise TypeError(f'search: invalid status: {status}.')
-        if not isinstance(offset, int) or offset < 0:
-            raise TypeError(f'search: invalid offset: {offset}.')
+        if status:
+            if status not in ['staged', 'unstaged']:
+                raise TypeError(f'search: invalid status: {status}.')
+            params['status'] = status
+        if offset:
+            if not str(limit).isdigit():
+                raise TypeError('search: offset must be numeric')
+            if int(limit) < 0:
+                raise ValueError(f'search: limit must be non-negative')
+            params['offset'] = int(offset)
         if limit:
-            if not isinstance(limit, int):
-                raise TypeError('search: limit must be an int.')
-            elif limit < 1:
-                raise TypeError(f'search: invalid number of retrieved results: {N}')
-        if specific and not isinstance(specific, dict):
-            raise TypeError('search: specific must be a dict.')
+            if not str(limit).isdigit():
+                raise TypeError('search: limit must be numeric')
+            if int(limit) < 1:
+                raise ValueError(f'search: limit must be greater than 1')
+            params['limit'] = int(limit)
+        if specific:
+            if not isinstance(specific, dict):
+                raise TypeError('search: specific must be a dict.')
+            params['specific'] = specific
         try:
-            params = {
-                'database': database,
-                'query':    query,
-            }
-            for name in ['status', 'offset', 'limit']:
-                val = eval(name)
-                if val:
-                    params[name] = val
-            if specific:
-                params['specific'] = specific
             response = requests.post(url=f'{self.uri}/files',
                                      json=params,
                                      auth=self.auth)
