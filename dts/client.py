@@ -50,11 +50,11 @@ class Client(object):
 
 * Connects the client to the given DTS `server` via the given `port` using the given
   (unencoded) `api_key`."""
-        if type(api_key) != str:
+        if not isinstance(api_key, str):
             raise TypeError('api_key must be an unencoded API key.')
-        if type(server) != str:
+        if not isinstance(server, str):
             raise TypeError('server must be a URI for a DTS server.')
-        if port and type(port) != int:
+        if port and not isinstance(port, int):
             raise TypeError('port must be an integer')
         self.auth = KBaseAuth(api_key)
         if port:
@@ -129,20 +129,20 @@ Optional arguments:
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
-        if type(query) != str:
+        if not isinstance(query, str):
             raise RuntimeError('search: missing or invalid query.')
-        if type(database) != str:
+        if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
         if status and status not in ['staged', 'unstaged']:
             raise TypeError(f'search: invalid status: {status}.')
-        if type(offset) != int or offset < 0:
+        if not isinstance(offset, int) or offset < 0:
             raise TypeError(f'search: invalid offset: {offset}.')
         if limit:
-            if type(limit) != int:
+            if not isinstance(limit, int):
                 raise TypeError('search: limit must be an int.')
             elif limit < 1:
                 raise TypeError(f'search: invalid number of retrieved results: {N}')
-        if specific and type(specific) != dict:
+        if specific and not isinstance(specific, dict):
             raise TypeError('search: specific must be a dict.')
         try:
             params = {
@@ -155,13 +155,9 @@ Optional arguments:
                     params[name] = val
             if specific:
                 params['specific'] = specific
-                response = requests.post(url=f'{self.uri}/files',
-                                         json=params,
-                                         auth=self.auth)
-            else:
-                response = requests.get(url=f'{self.uri}/files',
-                                        params=params,
-                                        auth=self.auth)
+            response = requests.post(url=f'{self.uri}/files',
+                                     json=params,
+                                     auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
             logger.error(f'HTTP error occurred: {http_err}')
@@ -191,13 +187,13 @@ Optional arguments:
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
-        if type(source) != str:
+        if not isinstance(source, str):
             raise TypeError('transfer: source database name must be a string.')
-        if type(destination) != str:
+        if not isinstance(destination, str):
             raise TypeError('transfer: destination database name must be a string.')
-        if type(file_ids) != list:
+        if not isinstance(file_ids, list):
             raise TypeError('transfer: file_ids must be a list of string file IDs.')
-        if timeout and type(timeout) != int and type(timeout) != float:
+        if timeout and not isinstance(timeout, int) and not isinstance(timeout, float):
             raise TypeError('transfer: timeout must be a number of seconds.')
         try:
             response = requests.post(url=f'{self.uri}/transfers',
@@ -238,7 +234,7 @@ Optional arguments:
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         try:
-            response = requests.get(url=f'{self.uri}/transfers/{str(id)}',
+            response = requests.get(url=f'{self.uri}/transfers/{id}',
                                     auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
@@ -250,11 +246,11 @@ Optional arguments:
         else:
             results = response.json()
             return TransferStatus(
-                id                    = results['id'],
-                status                = results['status'],
-                message               = results['message'] if 'message' in results else None,
-                num_files             = results['num_files'],
-                num_files_transferred = results['num_files_transferred'],
+                id                    = results.get('id'),
+                status                = results.get('status'),
+                message               = results.get('message'),
+                num_files             = results.get('num_files'),
+                num_files_transferred = results.get('num_files_transferred'),
             )
 
     def cancel_transfer(self, id):
@@ -266,7 +262,7 @@ Optional arguments:
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         try:
-            response = requests.delete(url=f'{self.uri}/transfers/{str(id)}',
+            response = requests.delete(url=f'{self.uri}/transfers/{id}',
                                        auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
