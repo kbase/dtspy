@@ -126,10 +126,6 @@ Optional arguments:
     * limit: if given, the maximum number of results to retrieve
     * specific: a dictionary mapping database-specific search parameters to their values
 """
-        params = {
-            'database': database,
-            'query':    query,
-        }
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         if query:
@@ -143,6 +139,10 @@ Optional arguments:
             raise RuntimeError('search: missing query.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
+        params = {
+            'database': database,
+            'query':    query,
+        }
         if status:
             if status not in ['staged', 'unstaged']:
                 raise TypeError(f'search: invalid status: {status}.')
@@ -167,6 +167,59 @@ Optional arguments:
             response = requests.post(url=f'{self.uri}/files',
                                      json=params,
                                      auth=self.auth)
+            response.raise_for_status()
+        except (HTTPError, requests.exceptions.HTTPError) as err:
+            logger.error(f'HTTP error occurred: {err}')
+            return None
+        except Exception as err:
+            logger.error(f'Other error occurred: {err}')
+            return None
+        return [JsonResource(r) for r in response.json()['resources']]
+
+    def fetch_metadata(self,
+               database = None,
+               ids = None,
+               offset = 0,
+               limit = None,
+    ):
+        """
+`client.fetch_metadata(database = None,
+               ids = None,
+               offset = 0,
+               limit = None) -> `list` of `frictionless.DataResource` objects
+
+* Fetches metadata for the files with the specified IDs within the specified
+  database.
+Optional arguments:
+    * offset: a 0-based index from which to start retrieving results (default: 0)
+    * limit: if given, the maximum number of results to retrieve
+"""
+        if not self.uri:
+            raise RuntimeError('dts.Client: not connected.')
+        if not isinstance(ids, list) or len(ids) == 0:
+            raise RuntimeError('search: missing or invalid file IDs.')
+        if not isinstance(database, str):
+            raise TypeError('search: database must be a string.')
+        params = {
+            'database': database,
+            'ids':    ','.join(ids),
+        }
+        if offset:
+            if not str(offset).isdigit():
+                raise TypeError('search: offset must be numeric')
+            if int(offset) < 0:
+                raise ValueError(f'search: offset must be non-negative')
+            params['offset'] = int(offset)
+        if limit:
+            if not str(limit).isdigit():
+                raise TypeError('search: limit must be numeric')
+            if int(limit) < 1:
+                raise ValueError(f'search: limit must be greater than 1')
+            params['limit'] = int(limit)
+        try:
+            response = requests.get(url=f'{self.uri}/files/by-id',
+                                    params=params,
+                                    auth=self.auth)
             response.raise_for_status()
         except (HTTPError, requests.exceptions.HTTPError) as err:
             logger.error(f'HTTP error occurred: {err}')
