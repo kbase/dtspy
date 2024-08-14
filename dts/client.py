@@ -233,15 +233,22 @@ Optional arguments:
                  file_ids = None,
                  source = None,
                  destination = None,
+                 description = None,
                  timeout = None):
         """
 `client.transfer(file_ids = None,
                  source = None,
                  destination = None,
+                 description = None,
+                 instructions = None,
                  timeout = None) -> UUID
 
 * Submits a request to transfer files from a source to a destination database. the
   files in the source database are identified by a list of string file_ids.
+Optional arguments:
+    * description: a string containing Markdown text describing the transfer
+    * instructions: a dict representing a JSON object containing instructions
+                    for processing the payload at its destination
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
@@ -253,13 +260,22 @@ Optional arguments:
             raise TypeError('transfer: file_ids must be a list of string file IDs.')
         if timeout and not isinstance(timeout, int) and not isinstance(timeout, float):
             raise TypeError('transfer: timeout must be a number of seconds.')
+        if description and not isinstance(description, str):
+            raise TypeError('transfer: description must be a string containing Markdown.')
+        if instructions and not isinstance(instructions, dict):
+            raise TypeError('transfer: instructions must be a dict representing a JSON object containing machine-readable instructions for processing the payload at its destination.')
+        json_obj = {
+            'source':      source,
+            'destination': destination,
+            'file_ids':    file_ids,
+        }
+        if description:
+            json_obj['description'] = description
+        if instructions:
+            json_obj['instructions'] = instructions
         try:
             response = requests.post(url=f'{self.uri}/transfers',
-                                     json={
-                                         'source':      source,
-                                         'destination': destination,
-                                         'file_ids':    file_ids,
-                                     },
+                                     json=json_obj,
                                      auth=self.auth,
                                      timeout=timeout)
             response.raise_for_status()
