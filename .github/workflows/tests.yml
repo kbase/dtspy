@@ -1,0 +1,48 @@
+name: tests
+
+# This action is triggered:
+# 1. when someone creates a pull request (to any branch)
+# 2. when changes are merged into the main branch (via a pull request)
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    # we support Linux and macOS
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    # Steps for running tests and analysis.
+    steps:
+      - name: Checking out repository (${{ matrix.os }})
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+
+      - name: Setting up Python 3.12 (${{ matrix.os }})
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installing dtspy dependencies (${{ matrix.os }})
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Running tests (${{ matrix.os }})
+        run: coverage run -m unittest discover
+        env:
+          DTS_KBASE_DEV_TOKEN: ${{ secrets.DTS_KBASE_DEV_TOKEN }}
+
+      # add this when ready
+      #- if: ${{ matrix.os == 'ubuntu-latest' }}
+      #  name: Uploading coverage report to codecov.io
+      #  uses: codecov/codecov-action@v4.0.1
+      #  with:
+      #    token: ${{ secrets.CODECOV_TOKEN }}
