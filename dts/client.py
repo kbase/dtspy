@@ -132,8 +132,15 @@ Optional arguments:
         }
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
-        if not isinstance(query, str):
-            raise RuntimeError('search: missing or invalid query.')
+        if query:
+            if not isinstance(query, str):
+                # we also accept numeric values
+                if isinstance(query, int) or isinstance(query, float):
+                    query = str(query)
+                else:
+                    raise RuntimeError('search: query must be a string or a number.')
+        else:
+            raise RuntimeError('search: missing query.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
         if status:
