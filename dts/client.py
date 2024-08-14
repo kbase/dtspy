@@ -126,10 +126,6 @@ Optional arguments:
     * limit: if given, the maximum number of results to retrieve
     * specific: a dictionary mapping database-specific search parameters to their values
 """
-        params = {
-            'database': database,
-            'query':    query,
-        }
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         if query:
@@ -143,6 +139,10 @@ Optional arguments:
             raise RuntimeError('search: missing query.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
+        params = {
+            'database': database,
+            'query':    query,
+        }
         if status:
             if status not in ['staged', 'unstaged']:
                 raise TypeError(f'search: invalid status: {status}.')
@@ -194,16 +194,16 @@ Optional arguments:
     * offset: a 0-based index from which to start retrieving results (default: 0)
     * limit: if given, the maximum number of results to retrieve
 """
-        params = {
-            'database': database,
-            'ids':    ','.join(ids),
-        }
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         if not isinstance(ids, list) or len(ids) == 0:
             raise RuntimeError('search: missing or invalid file IDs.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
+        params = {
+            'database': database,
+            'ids':    ','.join(ids),
+        }
         if offset:
             if not str(offset).isdigit():
                 raise TypeError('search: offset must be numeric')
