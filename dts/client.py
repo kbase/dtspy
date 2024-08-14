@@ -20,13 +20,13 @@ class KBaseAuth(AuthBase):
     def __init__(self, api_key):
         self.api_key = api_key
 
-    def __call__(self, r):
+    def __call__(self, request):
         b64_token = base64.b64encode(bytes(self.api_key + '\n', 'utf-8'))
         token = b64_token.decode('utf-8')
-        r.headers['Authorization'] = f'Bearer {token}'
-        return r
+        request.headers['Authorization'] = f'Bearer {token}'
+        return request
 
-class Client(object):
+class Client:
     """`Client`: A client for performing file transfers with the Data Transfer System"""
     def __init__(self,
                  api_key = None, 
@@ -93,12 +93,11 @@ class Client(object):
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
             return None
-        else:
-            results = response.json()
-            return [Database(id = r['id'],
-                             name = r['name'],
-                             organization = r['organization'],
-                             url = r['url']) for r in results]
+        results = response.json()
+        return [Database(id = r['id'],
+                         name = r['name'],
+                         organization = r['organization'],
+                         url = r['url']) for r in results]
 
     def search(self,
                database = None,
@@ -142,10 +141,10 @@ Optional arguments:
                 raise TypeError(f'search: invalid status: {status}.')
             params['status'] = status
         if offset:
-            if not str(limit).isdigit():
+            if not str(offset).isdigit():
                 raise TypeError('search: offset must be numeric')
-            if int(limit) < 0:
-                raise ValueError(f'search: limit must be non-negative')
+            if int(offset) < 0:
+                raise ValueError(f'search: offset must be non-negative')
             params['offset'] = int(offset)
         if limit:
             if not str(limit).isdigit():
@@ -162,17 +161,13 @@ Optional arguments:
                                      json=params,
                                      auth=self.auth)
             response.raise_for_status()
-        except HTTPError as http_err:
-            logger.error(f'HTTP error occurred: {http_err}')
-            return None
-        except requests.exceptions.HTTPError as err:
+        except (HTTPError, requests.exceptions.HTTPError) as err:
             logger.error(f'HTTP error occurred: {err}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
             return None
-        else:
-            return [JsonResource(r) for r in response.json()['resources']]
+        return [JsonResource(r) for r in response.json()['resources']]
 
     def transfer(self,
                  file_ids = None,
@@ -208,17 +203,13 @@ Optional arguments:
                                      auth=self.auth,
                                      timeout=timeout)
             response.raise_for_status()
-        except HTTPError as http_err:
-            logger.error(f'HTTP error occurred: {http_err}')
-            return None
-        except requests.exceptions.HTTPError as err:
+        except (HTTPError, requests.exceptions.HTTPError) as err:
             logger.error(f'HTTP error occurred: {err}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
             return None
-        else:
-            return uuid.UUID(response.json()["id"])
+        return uuid.UUID(response.json()["id"])
 
     def transfer_status(self, id):
         """`client.transfer_status(id)` -> TransferStatus
@@ -240,21 +231,20 @@ Optional arguments:
             response = requests.get(url=f'{self.uri}/transfers/{id}',
                                     auth=self.auth)
             response.raise_for_status()
-        except HTTPError as http_err:
+        except (HTTPError, requests.exceptions.HTTPError) as err:
             logger.error(f'HTTP error occurred: {http_err}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
             return None
-        else:
-            results = response.json()
-            return TransferStatus(
-                id                    = results.get('id'),
-                status                = results.get('status'),
-                message               = results.get('message'),
-                num_files             = results.get('num_files'),
-                num_files_transferred = results.get('num_files_transferred'),
-            )
+        results = response.json()
+        return TransferStatus(
+            id                    = results.get('id'),
+            status                = results.get('status'),
+            message               = results.get('message'),
+            num_files             = results.get('num_files'),
+            num_files_transferred = results.get('num_files_transferred'),
+        )
 
     def cancel_transfer(self, id):
         """
@@ -268,14 +258,13 @@ Optional arguments:
             response = requests.delete(url=f'{self.uri}/transfers/{id}',
                                        auth=self.auth)
             response.raise_for_status()
-        except HTTPError as http_err:
+        except (HTTPError, requests.exceptions.HTTPError) as err:
             logger.error(f'HTTP error occurred: {http_err}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
             return None
-        else:
-            return None
+        return None
 
     def __repr__(self):
         if self.uri:
