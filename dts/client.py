@@ -11,6 +11,7 @@ from . import (
 from urllib.error import (
     HTTPError,
 )
+from typing import Any
 
 logger = logging.getLogger('dts')
 api_version = 1
@@ -78,7 +79,7 @@ class Client:
         self.name = None
         self.version = None
 
-    def databases(self):
+    def databases(self) -> list[Database] | None:
         """`client.databases()` -> `list` of `Database` objects
 
 * Returns all databases available to the service, or `None` if an error occurs."""
@@ -106,7 +107,7 @@ class Client:
                offset = 0,
                limit = None,
                specific = None,
-    ):
+    ) -> list[JsonResource] | None:
         """
 `client.search(database = None,
                query = None,
@@ -139,7 +140,7 @@ Optional arguments:
             raise RuntimeError('search: missing query.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
-        params = {
+        params: dict[str, Any] = {
             'database': database,
             'query':    query,
         }
@@ -200,7 +201,7 @@ Optional arguments:
             raise RuntimeError('search: missing or invalid file IDs.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
-        params = {
+        params: dict[str, Any] = {
             'database': database,
             'ids':    ','.join(ids),
         }
@@ -234,6 +235,7 @@ Optional arguments:
                  source = None,
                  destination = None,
                  description = None,
+                 instructions = None,
                  timeout = None):
         """
 `client.transfer(file_ids = None,
