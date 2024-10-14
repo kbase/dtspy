@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dtspy"
+version = "0.1.0"
+description = "Python client for the Data Transfer Service"
+authors = [
+  { name = "Jeffrey N. Johnson", email = "jeff@cohere-llc.com" },
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "frictionless>=5.17.0,<6",
+  "requests>=2.32.3,<3",
+]
