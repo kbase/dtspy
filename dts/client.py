@@ -18,7 +18,7 @@ api_version = 1
 
 class KBaseAuth(AuthBase):
     """Attaches a KBase-sensible Authorization header to the given Request object."""
-    def __init__(self, api_key):
+    def __init__(self, api_key: str):
         self.api_key = api_key
 
     def __call__(self, request):
@@ -28,14 +28,31 @@ class KBaseAuth(AuthBase):
         return request
 
 class Client:
-    """`Client`: A client for performing file transfers with the Data Transfer System"""
-    def __init__(self,
-                 api_key = None, 
-                 server  = None,
-                 port    = None):
-        """`Client(server = None, port = None, api_key = None)` -> DTS client.
+    """`dts.Client`: A client for performing file transfers with the Data Transfer System (DTS).
 
-* If no `server` is given, you must call `connect` on the created client."""
+This type exposes the [DTS API](https://lb-dts.staging.kbase.us/docs#/) for use
+in Python programs.
+"""
+    def __init__(self,
+                 api_key: str | None = None, 
+                 server: str | None = None,
+                 port: int | None = None):
+        """Creates a DTS client that handles search and transfer requests via
+a connected server.
+
+If no server is specified, you must call `connect` on the created client.
+
+Args:
+    api_key: An unencoded KBase developer token.
+    server: The DTS server that handles the client's API requests.
+    port: The port to which the client connects with the server.
+
+Returns:
+    a `dts.Client` instance.
+
+Raises:
+    TypeError: an argument of improper type was specified.
+"""
         if server:
             self.connect(server = server, port = port, api_key = api_key)
         else:
@@ -44,13 +61,20 @@ class Client:
             self.version = None
 
     def connect(self,
-                api_key = None,
-                server = None,
-                port = None):
-        """`client.connect(api_key = None, server = None, port = None)`
+                api_key: str | None = None,
+                server: str | None = None,
+                port: int | None = None) -> None:
+        """Connects the client to the given DTS server via the given port using the given
+(unencoded) KBase developer token.
 
-* Connects the client to the given DTS `server` via the given `port` using the given
-  (unencoded) `api_key`."""
+Args:
+    api_key: An unencoded KBase developer token.
+    server: The DTS server that handles the client's API requests.
+    port: The port to which the client connects with the server.
+
+Raises:
+    TypeError: an argument of improper type was specified.
+"""
         if not isinstance(api_key, str):
             raise TypeError('api_key must be an unencoded API key.')
         if not isinstance(server, str):
@@ -70,19 +94,22 @@ class Client:
         self.name = result['name']
         self.version = result['version']
 
-    def disconnect(self):
-        """`client.disconnect() -> None
-
-* disconnects the client from the server."""
+    def disconnect(self) -> None:
+        """Disconnects the client from the server.
+"""
         self.api_key = None
         self.uri = None
         self.name = None
         self.version = None
 
-    def databases(self) -> list[Database] | None:
-        """`client.databases()` -> `list` of `Database` objects
+    def databases(self) -> list[Database]:
+        """Returns all databases available to the service.
 
-* Returns all databases available to the service, or `None` if an error occurs."""
+Server-side errors are captured and logged.
+
+Returns:
+    A list of Database objects containing information about available databases.
+"""
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         try:
@@ -90,10 +117,10 @@ class Client:
             response.raise_for_status()
         except HTTPError as http_err:
             logger.error(f'HTTP error occurred: {http_err}')
-            return None
+            return []
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
-            return None
+            return []
         results = response.json()
         return [Database(id = r['id'],
                          name = r['name'],
@@ -101,41 +128,42 @@ class Client:
                          url = r['url']) for r in results]
 
     def search(self,
-               database = None,
-               query = None,
-               status = None,
+               database: str,
+               query: str | int | float,
+               status: str | None,
                offset = 0,
                limit = None,
                specific = None,
-    ) -> list[JsonResource] | None:
-        """
-`client.search(database = None,
-               query = None,
-               status = None,
-               offset = 0,
-               limit = None,
-               specific = None) -> `list` of `frictionless.DataResource` objects
+    ) -> list[JsonResource]:
+        """Performs a synchronous search of the database with the given name using the given query string.
 
-* Performs a synchronous search of the database with the given name using the
-  given query string.
-Optional arguments:
-    * query: a search string that is directly interpreted by the database
-    * status: filters for files based on their status:
-        * `"staged"` means "search only for files that are already in the source database staging area"
-        * `"unstaged"` means "search only for files that are not staged"
-    * offset: a 0-based index from which to start retrieving results (default: 0)
-    * limit: if given, the maximum number of results to retrieve
-    * specific: a dictionary mapping database-specific search parameters to their values
+This method searches the indicated database for files that can be transferred.
+
+Args:
+    database: A string containing the name of the database to search.
+    query: A search string that is directly interpreted by the database.
+    status: An optional string (`"staged"` or `"unstaged"`) indicating whether files are filtered based on their status.
+    offset: An optional 0-based pagination index indicating the first retrieved result (default: 0).
+    limit: An optional pagination parameter indicating the maximum number of results to retrieve.
+    specific: An optional dictionary mapping database-specific search parameters to their values.
+
+Returns:
+    A list of [frictionless DataResources](https://specs.frictionlessdata.io/data-resource/)
+    containing metadata for files matching the query.
+
+Raises:
+    RuntimeError: Indicates an issue with the DTS client and its connection to the server.
+    TypeError: Indicates that an argument passed to the client isn't of the proper type.
+    ValueError: Indicates that an argument passed to the client has an invalid value.
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
-        if query:
-            if not isinstance(query, str):
-                # we also accept numeric values
-                if isinstance(query, int) or isinstance(query, float):
-                    query = str(query)
-                else:
-                    raise RuntimeError('search: query must be a string or a number.')
+        if not isinstance(query, str):
+            # we also accept numeric values
+            if isinstance(query, int) or isinstance(query, float):
+                query = str(query)
+            else:
+                raise TypeError('search: query must be a string or a number.')
         else:
             raise RuntimeError('search: missing query.')
         if not isinstance(database, str):
@@ -171,29 +199,35 @@ Optional arguments:
             response.raise_for_status()
         except (HTTPError, requests.exceptions.HTTPError) as err:
             logger.error(f'HTTP error occurred: {err}')
-            return None
+            return []
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
-            return None
+            return []
         return [JsonResource(r) for r in response.json()['resources']]
 
     def fetch_metadata(self,
-               database = None,
-               ids = None,
-               offset = 0,
-               limit = None,
-    ):
-        """
-`client.fetch_metadata(database = None,
-               ids = None,
-               offset = 0,
-               limit = None) -> `list` of `frictionless.DataResource` objects
+                       database: str,
+                       ids: list[str],
+                       offset: int = 0,
+                       limit: int | None = None) -> list[JsonResource]:
+        """Fetches metadata for the files with the specified IDs within the specified database.
 
-* Fetches metadata for the files with the specified IDs within the specified
-  database.
-Optional arguments:
-    * offset: a 0-based index from which to start retrieving results (default: 0)
-    * limit: if given, the maximum number of results to retrieve
+Server-side errors are intercepted and logged.
+
+Args:
+    database: A string containing the name of the database to search.
+    ids: A list containing file identifiers for which metadata is retrieved.
+    offset: An optional 0-based pagination index from which to start retrieving results (default: 0).
+    limit: An optional pagination parameter indicating the maximum number of results to retrieve.
+
+Returns:
+    A list of [frictionless DataResources](https://specs.frictionlessdata.io/data-resource/)
+    containing metadata for files with the requested IDs.
+
+Raises:
+    RuntimeError: Indicates an issue with the DTS client and its connection to the server.
+    TypeError: Indicates that an argument passed to the client isn't of the proper type.
+    ValueError: Indicates that an argument passed to the client has an invalid value.
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
@@ -224,33 +258,39 @@ Optional arguments:
             response.raise_for_status()
         except (HTTPError, requests.exceptions.HTTPError) as err:
             logger.error(f'HTTP error occurred: {err}')
-            return None
+            return []
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
-            return None
+            return []
         return [JsonResource(r) for r in response.json()['resources']]
 
     def transfer(self,
-                 file_ids = None,
-                 source = None,
-                 destination = None,
-                 description = None,
-                 instructions = None,
-                 timeout = None):
-        """
-`client.transfer(file_ids = None,
-                 source = None,
-                 destination = None,
-                 description = None,
-                 instructions = None,
-                 timeout = None) -> UUID
+                 file_ids: list[str],
+                 source: str,
+                 destination: str,
+                 description: str | None = None,
+                 instructions: dict[str, Any] | None = None,
+                 timeout: int | None = None) -> uuid.UUID | None:
+        """Submits a request to transfer files from a source to a destination database.
 
-* Submits a request to transfer files from a source to a destination database. the
-  files in the source database are identified by a list of string file_ids.
-Optional arguments:
-    * description: a string containing Markdown text describing the transfer
-    * instructions: a dict representing a JSON object containing instructions
-                    for processing the payload at its destination
+Server-side errors are intercepted and logged.
+
+Args:
+    file_ids: A list of identifiers for files to be transferred.
+    source: The name of the database from which files are transferred.
+    destination: The name of the database to which files are transferred.
+    description: An optional string containing human-readable Markdown text describing the transfer.
+    instructions: An optional dict representing a JSON object containing instructions for processing the payload at its destination.
+    timeout: An optional integer indicating the number of seconds to wait for a response from the server.
+
+Returns:
+    A UUID uniquely identifying the file transfer that can be used to check its
+    status, or None if a server-side error is encountered.
+
+Raises:
+    RuntimeError: Indicates an issue with the DTS client and its connection to the server.
+    TypeError: Indicates that an argument passed to the client isn't of the proper type.
+    ValueError: Indicates that an argument passed to the client has an invalid value.
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
@@ -289,11 +329,18 @@ Optional arguments:
             return None
         return uuid.UUID(response.json()["id"])
 
-    def transfer_status(self, id):
-        """`client.transfer_status(id)` -> TransferStatus
+    def transfer_status(self, id: uuid.UUID) -> TransferStatus | None:
+        """Returns status information for the transfer with the given identifier.
 
-* Returns status information for the transfer with the given identifier.
-  Possible statuses are:
+
+Server-side errors are intercepted and logged.
+
+Arguments:
+    id: A UUID that uniquely identifies the transfer operation for which the status is requested.
+
+Returns:
+    A `TransferStatus` object whose contents indicate the status of the transfer,
+    or None if a server-side error occurs. Possible statuses are:
     * `'staging'`: the files requested for transfer are being copied to the staging
                    area for the source database job
     * `'active'`: the files are being transferred from the source database to the 
@@ -302,7 +349,12 @@ Optional arguments:
     * `'inactive'`: the file transfer has been suspended
     * `'failed'`: the file transfer could not be completed because of a failure`
     * `'unknown'`: the status of the given transfer is unknown
-* If an error is encountered, returns `None`."""
+
+Raises:
+    RuntimeError: Indicates an issue with the DTS client and its connection to the server.
+    TypeError: Indicates that an argument passed to the client isn't of the proper type.
+    ValueError: Indicates that an argument passed to the client has an invalid value.
+"""
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         try:
@@ -310,7 +362,7 @@ Optional arguments:
                                     auth=self.auth)
             response.raise_for_status()
         except (HTTPError, requests.exceptions.HTTPError) as err:
-            logger.error(f'HTTP error occurred: {http_err}')
+            logger.error(f'HTTP error occurred: {err}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -324,11 +376,19 @@ Optional arguments:
             num_files_transferred = results.get('num_files_transferred'),
         )
 
-    def cancel_transfer(self, id):
-        """
-`client.cancel_transfer(id) -> None
+    def cancel_transfer(self, id: uuid.UUID):
+        """Cancels a file transfer with the requested UUID.
 
-* Deletes a file transfer, canceling
+Status information for the cancelled transfer is retained for a time so its
+cancellation can be seen.
+
+Args:
+    id: A UUID that uniquely identifies the transfer operation to be cancelled.
+
+Raises:
+    RuntimeError: Indicates an issue with the DTS client and its connection to the server.
+    TypeError: Indicates that an argument passed to the client isn't of the proper type.
+    ValueError: Indicates that an argument passed to the client has an invalid value.
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
@@ -337,7 +397,7 @@ Optional arguments:
                                        auth=self.auth)
             response.raise_for_status()
         except (HTTPError, requests.exceptions.HTTPError) as err:
-            logger.error(f'HTTP error occurred: {http_err}')
+            logger.error(f'HTTP error occurred: {err}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
