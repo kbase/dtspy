@@ -130,7 +130,7 @@ Returns:
     def search(self,
                database: str,
                query: str | int | float,
-               status: str | None,
+               status: str | None = None,
                offset: int = 0,
                limit: int | None = None,
                specific: dict[str, Any] | None = None,
