@@ -163,8 +163,6 @@ Raises:
                 query = str(query)
             else:
                 raise TypeError('search: query must be a string or a number.')
-        else:
-            raise RuntimeError('search: missing query.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
         params: dict[str, Any] = {
