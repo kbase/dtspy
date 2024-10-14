@@ -7,5 +7,5 @@ plugins:
   - mkdocstrings
 
 nav:
-  - dtspy: index.md
+  - Overview: index.md
   - API reference: api.md
