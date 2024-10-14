@@ -131,9 +131,9 @@ Returns:
                database: str,
                query: str | int | float,
                status: str | None,
-               offset = 0,
-               limit = None,
-               specific = None,
+               offset: int = 0,
+               limit: int | None = None,
+               specific: dict[str, Any] | None = None,
     ) -> list[JsonResource]:
         """Performs a synchronous search of the database with the given name using the given query string.
 
@@ -148,8 +148,7 @@ Args:
     specific: An optional dictionary mapping database-specific search parameters to their values.
 
 Returns:
-    A list of [frictionless DataResources](https://specs.frictionlessdata.io/data-resource/)
-    containing metadata for files matching the query.
+    A list of [frictionless DataResources](https://specs.frictionlessdata.io/data-resource/) containing metadata for files matching the query.
 
 Raises:
     RuntimeError: Indicates an issue with the DTS client and its connection to the server.
@@ -221,8 +220,7 @@ Args:
     limit: An optional pagination parameter indicating the maximum number of results to retrieve.
 
 Returns:
-    A list of [frictionless DataResources](https://specs.frictionlessdata.io/data-resource/)
-    containing metadata for files with the requested IDs.
+    A list of [frictionless DataResources](https://specs.frictionlessdata.io/data-resource/) containing metadata for files with the requested IDs.
 
 Raises:
     RuntimeError: Indicates an issue with the DTS client and its connection to the server.
@@ -284,8 +282,7 @@ Args:
     timeout: An optional integer indicating the number of seconds to wait for a response from the server.
 
 Returns:
-    A UUID uniquely identifying the file transfer that can be used to check its
-    status, or None if a server-side error is encountered.
+    A UUID uniquely identifying the file transfer that can be used to check its status, or None if a server-side error is encountered.
 
 Raises:
     RuntimeError: Indicates an issue with the DTS client and its connection to the server.
@@ -333,22 +330,22 @@ Raises:
         """Returns status information for the transfer with the given identifier.
 
 
-Server-side errors are intercepted and logged.
+Server-side errors are intercepted and logged. Possible transfer statuses are:
+
+* `'staging'`: The files requested for transfer are being copied to the staging
+               area for the source database job.
+* `'active'`: The files are being transferred from the source database to the 
+              destination database.
+* `'finalizing'`: The files have been transferred and a manifest is being written.
+* `'inactive'`: The file transfer has been suspended.
+* `'failed'`: The file transfer could not be completed because of a failure.
+* `'unknown'`: The status of the given transfer is unknown.
 
 Arguments:
     id: A UUID that uniquely identifies the transfer operation for which the status is requested.
 
 Returns:
-    A `TransferStatus` object whose contents indicate the status of the transfer,
-    or None if a server-side error occurs. Possible statuses are:
-    * `'staging'`: the files requested for transfer are being copied to the staging
-                   area for the source database job
-    * `'active'`: the files are being transferred from the source database to the 
-                  destination database
-    * `'finalizing'`: the files have been transferred and a manifest is being written
-    * `'inactive'`: the file transfer has been suspended
-    * `'failed'`: the file transfer could not be completed because of a failure`
-    * `'unknown'`: the status of the given transfer is unknown
+    A `TransferStatus` object whose contents indicate the status of the transfer, or None if a server-side error occurs.
 
 Raises:
     RuntimeError: Indicates an issue with the DTS client and its connection to the server.
