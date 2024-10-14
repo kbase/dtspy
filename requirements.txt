@@ -6,6 +6,7 @@ chardet==5.2.0
 charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
+coverage==7.6.3
 frictionless==5.17.0
 ghp-import==2.1.0
 griffe==1.4.1
