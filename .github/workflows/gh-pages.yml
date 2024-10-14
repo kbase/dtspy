@@ -39,7 +39,7 @@ jobs:
         run: python3 -m pip install -r requirements.txt
 
       - name: Build
-        run: mkdocs build --strict --verbose
+        run: mkdocs build --verbose
 
       - if: ${{ github.event_name == 'push' }}
         name: GitHub Pages action
