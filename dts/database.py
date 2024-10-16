@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass(slots = True)
-class Database(object):
+class Database:
     """`Database` - A database storing files that can be selected and transferred.
 
 This type holds human-readable information about databases available to DTS.

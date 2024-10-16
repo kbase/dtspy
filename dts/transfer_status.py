@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 @dataclass(slots = True)
-class TransferStatus(object):
+class TransferStatus:
     """`TransferStatus` status information for a file transfer.
 
 This type holds information pertaining to the transfer of a payload initiated

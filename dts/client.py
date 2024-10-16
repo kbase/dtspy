@@ -18,10 +18,10 @@ api_version = 1
 
 class KBaseAuth(AuthBase):
     """Attaches a KBase-sensible Authorization header to the given Request object."""
-    def __init__(self, api_key: str):
+    def __init__(self: "KBaseAuth", api_key: str):
         self.api_key = api_key
 
-    def __call__(self, request):
+    def __call__(self: "KBaseAuth", request):
         b64_token = base64.b64encode(bytes(self.api_key + '\n', 'utf-8'))
         token = b64_token.decode('utf-8')
         request.headers['Authorization'] = f'Bearer {token}'
@@ -33,7 +33,7 @@ class Client:
 This type exposes the [DTS API](https://lb-dts.staging.kbase.us/docs#/) for use
 in Python programs.
 """
-    def __init__(self,
+    def __init__(self: "Client",
                  api_key: str | None = None, 
                  server: str | None = None,
                  port: int | None = None):
@@ -60,7 +60,7 @@ Raises:
             self.name = None
             self.version = None
 
-    def connect(self,
+    def connect(self: "Client",
                 api_key: str | None = None,
                 server: str | None = None,
                 port: int | None = None) -> None:
@@ -74,6 +74,7 @@ Args:
 
 Raises:
     TypeError: an argument of improper type was specified.
+    urllib3.exceptions.ConnectionError: the client was unable to connect to the DTS server.
 """
         if not isinstance(api_key, str):
             raise TypeError('api_key must be an unencoded API key.')
@@ -94,7 +95,7 @@ Raises:
         self.name = result['name']
         self.version = result['version']
 
-    def disconnect(self) -> None:
+    def disconnect(self: "Client") -> None:
         """Disconnects the client from the server.
 """
         self.api_key = None
@@ -102,7 +103,7 @@ Raises:
         self.name = None
         self.version = None
 
-    def databases(self) -> list[Database]:
+    def databases(self: "Client") -> list[Database]:
         """Returns all databases available to the service.
 
 Server-side errors are captured and logged.
@@ -127,7 +128,7 @@ Returns:
                          organization = r['organization'],
                          url = r['url']) for r in results]
 
-    def search(self,
+    def search(self: "Client",
                database: str,
                query: str | int | float,
                status: str | None = None,
@@ -202,7 +203,7 @@ Raises:
             return []
         return [JsonResource(r) for r in response.json()['resources']]
 
-    def fetch_metadata(self,
+    def fetch_metadata(self: "Client",
                        database: str,
                        ids: list[str],
                        offset: int = 0,
@@ -260,7 +261,7 @@ Raises:
             return []
         return [JsonResource(r) for r in response.json()['resources']]
 
-    def transfer(self,
+    def transfer(self: "Client",
                  file_ids: list[str],
                  source: str,
                  destination: str,
@@ -324,7 +325,8 @@ Raises:
             return None
         return uuid.UUID(response.json()["id"])
 
-    def transfer_status(self, id: uuid.UUID) -> TransferStatus | None:
+    def transfer_status(self: "Client",
+                        id: uuid.UUID) -> TransferStatus | None:
         """Returns status information for the transfer with the given identifier.
 
 
@@ -371,7 +373,8 @@ Raises:
             num_files_transferred = results.get('num_files_transferred'),
         )
 
-    def cancel_transfer(self, id: uuid.UUID):
+    def cancel_transfer(self: "Client",
+                        id: uuid.UUID):
         """Cancels a file transfer with the requested UUID.
 
 Status information for the cancelled transfer is retained for a time so its
@@ -399,7 +402,7 @@ Raises:
             return None
         return None
 
-    def __repr__(self):
+    def __repr__(self: "Client"):
         if self.uri:
             return f"""
 dts.Client(uri     = {self.uri},
