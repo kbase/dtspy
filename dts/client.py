@@ -18,7 +18,7 @@ api_version = 1
 
 class KBaseAuth(AuthBase):
     """Attaches a KBase-sensible Authorization header to the given Request object."""
-    def __init__(self: "KBaseAuth", api_key: str):
+    def __init__(self: "KBaseAuth", api_key: str) -> None:
         self.api_key = api_key
 
     def __call__(self: "KBaseAuth", request):
@@ -36,7 +36,7 @@ in Python programs.
     def __init__(self: "Client",
                  api_key: str | None = None, 
                  server: str | None = None,
-                 port: int | None = None):
+                 port: int | None = None) -> None:
         """Creates a DTS client that handles search and transfer requests via
 a connected server.
 
@@ -374,7 +374,7 @@ Raises:
         )
 
     def cancel_transfer(self: "Client",
-                        id: uuid.UUID):
+                        id: uuid.UUID) -> None:
         """Cancels a file transfer with the requested UUID.
 
 Status information for the cancelled transfer is retained for a time so its
@@ -402,7 +402,7 @@ Raises:
             return None
         return None
 
-    def __repr__(self: "Client"):
+    def __repr__(self: "Client") -> str:
         if self.uri:
             return f"""
 dts.Client(uri     = {self.uri},
