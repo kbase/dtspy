@@ -2,8 +2,13 @@ from dataclasses import dataclass
 from typing import Optional
 
 @dataclass(slots = True)
-class TransferStatus(object):
-    """`TransferStatus` - holds status information for a file transfer"""
+class TransferStatus:
+    """`TransferStatus` status information for a file transfer.
+
+This type holds information pertaining to the transfer of a payload initiated
+via the DTS. Objects of this type are returned by calls to the DTS API, so it
+is not necessary to create them directly.
+"""
     id:                    str
     status:                str
     message:               Optional[str]
