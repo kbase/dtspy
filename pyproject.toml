@@ -10,7 +10,7 @@ authors = [
   { name = "Jeffrey N. Johnson", email = "jeff@cohere-llc.com" },
 ]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
   "frictionless>=5.17.0,<6",
   "requests>=2.32.3,<3",
