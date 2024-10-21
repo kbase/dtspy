@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#dtspy-a-python-client-for-the-data-transfer-system" class="md-skip">
+        <a href="#dtspy-a-python-client-for-the-data-transfer-system-dts" class="md-skip">
           Skip to content
         </a>
       
@@ -163,6 +163,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="." class="md-nav__link md-nav__link--active">
         
   
@@ -172,6 +183,43 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quickstart
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -217,6 +265,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quickstart
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -230,8 +304,53 @@
                   
 
 
-<h1 id="dtspy-a-python-client-for-the-data-transfer-system">dtspy: a Python client for the <a href="https://kbase.github.io/dts/">Data Transfer System</a></h1>
-<p>Check back soon!</p>
+<h1 id="dtspy-a-python-client-for-the-data-transfer-system-dts">dtspy: a Python client for the Data Transfer System (DTS)</h1>
+<p>The <code>dtspy</code> Python client allows you to use the <a href="https://kbase.github.io/dts/">DTS</a>
+to search for files and transfer them between several organizations supported
+by the Department of Energy (DOE) Biological and Environmental Research (BER)
+program:</p>
+<ul>
+<li><a href="https://data.jgi.doe.gov/">JGI Data Portal (JDP)</a></li>
+<li><a href="https://microbiomedata.org/">DOE National Microbiome Data Collaborative (NMDC)</a></li>
+<li><a href="https://www.kbase.us">DOE Biology Knowledgebase(KBase)</a></li>
+<li>More coming soon!</li>
+</ul>
+<p>You can use <code>dtspy</code> to create a client that connects to a DTS server, and use
+that client to</p>
+<ul>
+<li>search for data files within databases supported by the above organizations,
+  obtaining their canonical IDs and metadata identifying their provenance</li>
+<li>request the transfer of one or more of these data files between databases by
+  using canonical file IDs</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p><code>dtspy</code> requires Python 3.12 or greater. We recommend installing it in a
+<a href="https://docs.python.org/3/library/venv.html">virtual environment</a> alongside any
+tools or workflows you use to analyze the data you're searching for and
+transferring. You can install <code>dtspy</code> using <code>pip</code> (or <code>pip3</code>):</p>
+<pre><code>pip install dtspy
+</code></pre>
+<p>The DTS uses KBase's authentication server, so you also need a
+<a href="https://docs.kbase.us/development/create-a-kbase-developer-account">KBase developer account</a>
+with a <a href="https://kbase.github.io/kb_sdk_docs/tutorial/3_initialize.html#set-up-your-developer-credentials">credential (token)</a>.</p>
+<p>To avoid putting your developer token in your Python scripts, you can store it
+in an environment variable like <code>DTS_KBASE_DEV_TOKEN</code>. We'll use this environment
+variable to access your token in the examples below.</p>
+<h2 id="quickstart">Quickstart</h2>
+<p>Here's an example how you can create a DTS client connected to a server,
+search for files within the JGI Data Portal, and print their metadata:</p>
+<pre><code>import dts
+import os
+
+token = os.getenv('DTS_KBASE_DEV_TOKEN')
+dts_client = dts.Client(api_key = token,
+                        server = &quot;https://lb-dts.staging.kbase.us&quot;)
+
+results = dts_client.search(database = 'jdp',
+                            query = 'prochlorococcus')
+print(results)
+
+</code></pre>
 
 
 
