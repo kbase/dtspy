@@ -42,7 +42,7 @@ jobs:
       - name: Build
         run: uv run --dev mkdocs build --verbose
 
-      - if: ${{ github.event_name == 'push' }}
+      - if: ${{ github.event_name == 'push' }} || ${{ github.event_name == 'workflow_dispatch' }}
         name: GitHub Pages action
         uses: JamesIves/github-pages-deploy-action@v4
         with:
