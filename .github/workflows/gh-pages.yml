@@ -44,16 +44,17 @@ jobs:
 
       - if: ${{ github.event_name == 'push' }} || ${{ github.event_name == 'workflow_dispatch' }}
         name: GitHub Pages action
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@v4.6.8
         with:
           # Do not remove existing pr-preview pages
           clean-exclude: pr-preview
           folder: ./site/
+          force: false # don't force-push, which overwrites previews
 
       # If it's a PR from within the same repo, deploy to a preview page
       # For security reasons, PRs from forks cannot write into gh-pages for now
       - if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
         name: Preview docs
-        uses: rossjrw/pr-preview-action@v1
+        uses: rossjrw/pr-preview-action@v1.4.8
         with:
           source-dir: ./site/
