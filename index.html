@@ -200,6 +200,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#prerequisites-for-using-dtspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites for Using dtspy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -272,6 +281,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#prerequisites-for-using-dtspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites for Using dtspy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -323,32 +341,41 @@ that client to</p>
 <li>request the transfer of one or more of these data files between databases by
   using canonical file IDs</li>
 </ul>
+<h2 id="prerequisites-for-using-dtspy">Prerequisites for Using <code>dtspy</code></h2>
+<p>To use the DTS Python client, you need</p>
+<ul>
+<li>Python 3.12</li>
+<li>an <a href="https://orcid.org/register">ORCID account</a></li>
+<li>a <a href="https://docs.kbase.us/development/create-a-kbase-developer-account">KBase developer account</a> with a
+  <a href="https://kbase.github.io/kb_sdk_docs/tutorial/3_initialize.html#set-up-your-developer-credentials">developer token</a></li>
+</ul>
+<p>DTS uses KBase's authentication server, so the token associates your DTS client
+with your KBase account, allowing you to transfer files to it.</p>
 <h2 id="installation">Installation</h2>
-<p><code>dtspy</code> requires Python 3.12 or greater. We recommend installing it in a
-<a href="https://docs.python.org/3/library/venv.html">virtual environment</a> alongside any
-tools or workflows you use to analyze the data you're searching for and
-transferring. You can install <code>dtspy</code> using <code>pip</code> (or <code>pip3</code>):</p>
+<p>We recommend installing <code>dtspy</code> in a <a href="https://docs.python.org/3/library/venv.html">virtual environment</a>
+alongside any tools or workflows you use to analyze the data you're working with.
+You can install <code>dtspy</code> using <code>pip</code> (or <code>pip3</code>):</p>
 <pre><code>pip install dtspy
 </code></pre>
-<p>The DTS uses KBase's authentication server, so you also need a
-<a href="https://docs.kbase.us/development/create-a-kbase-developer-account">KBase developer account</a>
-with a <a href="https://kbase.github.io/kb_sdk_docs/tutorial/3_initialize.html#set-up-your-developer-credentials">credential (token)</a>.</p>
-<p>To avoid putting your developer token in your Python scripts, you can store it
-in an environment variable like <code>DTS_KBASE_DEV_TOKEN</code>. We'll use this environment
-variable to access your token in the examples below.</p>
 <h2 id="quickstart">Quickstart</h2>
-<p>Here's an example how you can create a DTS client connected to a server,
-search for files within the JGI Data Portal, and print their metadata:</p>
+<p>Below is an example describing how to create a DTS client connected to a server,
+search for files within the JGI Data Portal, and print their metadata.</p>
 <pre><code>import dts
 import os
 
+# to avoid putting your developer token in your Python scripts, store it
+# in an environment variable like `DTS_KBASE_DEV_TOKEN`
 token = os.getenv('DTS_KBASE_DEV_TOKEN')
+
+# connect to the DTS server
 dts_client = dts.Client(api_key = token,
                         server = &quot;https://lb-dts.staging.kbase.us&quot;)
 
-results = dts_client.search(database = 'jdp',
-                            query = 'prochlorococcus')
-print(results)
+# search the JGI Data Portal for files related to prochlorococcus, a small
+# marine cyanobacteria
+files = dts_client.search(database = 'jdp',
+                          query = 'prochlorococcus')
+print(files)
 
 </code></pre>
 
