@@ -46,7 +46,7 @@ Below is an example describing how to create a DTS client connected to a server,
 search for files within the JGI Data Portal, and print their metadata.
 
 
-```
+```py
 import dts
 import os
 
