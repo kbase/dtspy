@@ -1,12 +1,12 @@
 # Example scripts
 
-* [filter_on_taxon_id.py](examples/filter_on_taxon_id.py)
+* [filter_on_taxon_id.py](filter_on_taxon_id.py)
 
 This script searches for files in the JGI Data Portal related to a given IMG
 taxon OID, printing metadata for any results.
 
-* [match_files_to_ids_in_spreadsheet.py](examples/match_files_to_ids_in_spreadsheet.py)
+* [match_files_to_ids_in_spreadsheet.py](match_files_to_ids_in_spreadsheet.py)
 
-This script extracts identifiers from a [spreadsheet](examples/IMG.csv), searches
+This script extracts identifiers from a [spreadsheet](IMG.csv), searches
 for related files, and writes another spreadsheet with relavent filenames and
 identifier information.
