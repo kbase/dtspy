@@ -9,3 +9,4 @@ plugins:
 nav:
   - Overview: index.md
   - API reference: api.md
+  - Example scripts: examples.md
