@@ -138,13 +138,15 @@ dependencies = [
     { name = "requests" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "coverage" },
+[package.dependency-groups]
+doc = [
     { name = "mkdocs" },
     { name = "mkdocs-material" },
     { name = "mkdocstrings" },
     { name = "mkdocstrings-python" },
+]
+test = [
+    { name = "coverage" },
 ]
 
 [package.metadata]
@@ -153,14 +155,14 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.3,<3" },
 ]
 
-[package.metadata.requires-dev]
-dev = [
-    { name = "coverage", specifier = ">=7.6.3,<8" },
+[package.metadata.dependency-groups]
+doc = [
     { name = "mkdocs", specifier = ">=1.6.1" },
     { name = "mkdocs-material", specifier = ">=9.5.41" },
     { name = "mkdocstrings", specifier = ">=0.26.2" },
     { name = "mkdocstrings-python", specifier = ">=1.12.1" },
 ]
+test = [{ name = "coverage", specifier = ">=7.6.3,<8" }]
 
 [[package]]
 name = "frictionless"
