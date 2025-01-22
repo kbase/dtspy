@@ -11,6 +11,7 @@ class TestClient(unittest.TestCase):
         self.token = os.getenv('DTS_KBASE_DEV_TOKEN')
         if not self.token:
             raise ValueError('Environment variable DTS_KBASE_DEV_TOKEN must be set!')
+        self.orcid = os.getenv('DTS_KBASE_TEST_ORCID')
         self.server = "https://lb-dts.staging.kbase.us"
 
     def test_ctor(self):
@@ -37,13 +38,14 @@ class TestClient(unittest.TestCase):
         client = dts.Client(api_key = self.token, server = self.server)
         dbs = client.databases()
         self.assertTrue(isinstance(dbs, list))
-        self.assertEqual(2, len(dbs))
+        self.assertEqual(3, len(dbs))
         self.assertTrue(any([db.id == 'jdp' for db in dbs]))
         self.assertTrue(any([db.id == 'kbase' for db in dbs]))
+        self.assertTrue(any([db.id == 'nmdc' for db in dbs]))
 
     def test_basic_jdp_search(self):
         client = dts.Client(api_key = self.token, server = self.server)
-        results = client.search(database = 'jdp', query = '3300047546')
+        results = client.search(database = 'jdp', orcid = self.orcid, query = '3300047546')
         self.assertTrue(isinstance(results, list))
         self.assertTrue(len(results) > 0)
         self.assertTrue(all([result.to_dict()['id'].startswith('JDP:')
@@ -54,6 +56,7 @@ class TestClient(unittest.TestCase):
         taxon_oid = '2582580701'
         params = {'f': 'img_taxon_oid', 'extra': 'img_taxon_oid'}
         results = client.search(database = 'jdp',
+                                orcid = self.orcid,
                                 query = taxon_oid,
                                 specific = params)
         self.assertTrue(isinstance(results, list))
@@ -64,6 +67,7 @@ class TestClient(unittest.TestCase):
     def test_fetch_jdp_metadata(self):
         client = dts.Client(api_key = self.token, server = self.server)
         resources = client.fetch_metadata(database = 'jdp',
+                                          orcid = self.orcid,
                                           ids = ['JDP:6101cc0f2b1f2eeea564c978',
                                                  'JDP:613a7baa72d3a08c9a54b32d',
                                                  'JDP:61412246cc4ff44f36c8913d'])
