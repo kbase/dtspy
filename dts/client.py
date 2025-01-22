@@ -130,6 +130,7 @@ Returns:
 
     def search(self: "Client",
                database: str,
+               orcid: str,
                query: str | int | float,
                status: str | None = None,
                offset: int = 0,
@@ -142,6 +143,7 @@ This method searches the indicated database for files that can be transferred.
 
 Args:
     database: A string containing the name of the database to search.
+    orcid: An ORCID for the user searching for files.
     query: A search string that is directly interpreted by the database.
     status: An optional string (`"staged"` or `"unstaged"`) indicating whether files are filtered based on their status.
     offset: An optional 0-based pagination index indicating the first retrieved result (default: 0).
@@ -158,6 +160,8 @@ Raises:
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
+        if not isinstance(orcid, str):
+            raise TypeError('search: orcid must be a string.')
         if not isinstance(query, str):
             # we also accept numeric values
             if isinstance(query, int) or isinstance(query, float):
@@ -168,6 +172,7 @@ Raises:
             raise TypeError('search: database must be a string.')
         params: dict[str, Any] = {
             'database': database,
+            'orcid':    orcid,
             'query':    query,
         }
         if status:
@@ -205,6 +210,7 @@ Raises:
 
     def fetch_metadata(self: "Client",
                        database: str,
+                       orcid: str,
                        ids: list[str],
                        offset: int = 0,
                        limit: int | None = None) -> list[JsonResource]:
@@ -214,6 +220,7 @@ Server-side errors are intercepted and logged.
 
 Args:
     database: A string containing the name of the database to search.
+    orcid: An ORCID for the user requesting the metadata.
     ids: A list containing file identifiers for which metadata is retrieved.
     offset: An optional 0-based pagination index from which to start retrieving results (default: 0).
     limit: An optional pagination parameter indicating the maximum number of results to retrieve.
@@ -232,8 +239,11 @@ Raises:
             raise RuntimeError('search: missing or invalid file IDs.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
+        if not isinstance(orcid, str):
+            raise TypeError('search: orcid must be a string.')
         params: dict[str, Any] = {
             'database': database,
+            'orcid':    orcid,
             'ids':    ','.join(ids),
         }
         if offset:
@@ -262,6 +272,7 @@ Raises:
         return [JsonResource(r) for r in response.json()['resources']]
 
     def transfer(self: "Client",
+                 orcid: str,
                  file_ids: list[str],
                  source: str,
                  destination: str,
@@ -273,6 +284,7 @@ Raises:
 Server-side errors are intercepted and logged.
 
 Args:
+    orcid: An ORCID for the user requesting the transfer.
     file_ids: A list of identifiers for files to be transferred.
     source: The name of the database from which files are transferred.
     destination: The name of the database to which files are transferred.
@@ -294,6 +306,8 @@ Raises:
             raise TypeError('transfer: source database name must be a string.')
         if not isinstance(destination, str):
             raise TypeError('transfer: destination database name must be a string.')
+        if not isinstance(orcid, str):
+            raise TypeError('transfer: orcid must be a string.')
         if not isinstance(file_ids, list):
             raise TypeError('transfer: file_ids must be a list of string file IDs.')
         if timeout and not isinstance(timeout, int) and not isinstance(timeout, float):
@@ -303,6 +317,7 @@ Raises:
         if instructions and not isinstance(instructions, dict):
             raise TypeError('transfer: instructions must be a dict representing a JSON object containing machine-readable instructions for processing the payload at its destination.')
         json_obj = {
+            'orcid':       orcid,
             'source':      source,
             'destination': destination,
             'file_ids':    file_ids,
