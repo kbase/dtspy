@@ -969,7 +969,22 @@ in Python programs.</p>
 <span class="normal">409</span>
 <span class="normal">410</span>
 <span class="normal">411</span>
-<span class="normal">412</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;`dts.Client`: A client for performing file transfers with the Data Transfer System (DTS).</span>
 
 <span class="sd">This type exposes the [DTS API](https://lb-dts.staging.kbase.us/docs#/) for use</span>
@@ -1072,6 +1087,7 @@ in Python programs.</p>
 
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
                <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+               <span class="n">orcid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
                <span class="n">status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -1084,6 +1100,7 @@ in Python programs.</p>
 
 <span class="sd">Args:</span>
 <span class="sd">    database: A string containing the name of the database to search.</span>
+<span class="sd">    orcid: An ORCID for the user searching for files.</span>
 <span class="sd">    query: A search string that is directly interpreted by the database.</span>
 <span class="sd">    status: An optional string (`&quot;staged&quot;` or `&quot;unstaged&quot;`) indicating whether files are filtered based on their status.</span>
 <span class="sd">    offset: An optional 0-based pagination index indicating the first retrieved result (default: 0).</span>
@@ -1100,6 +1117,8 @@ in Python programs.</p>
 <span class="sd">&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;dts.Client: not connected.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orcid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: orcid must be a string.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># we also accept numeric values</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
@@ -1110,6 +1129,7 @@ in Python programs.</p>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: database must be a string.&#39;</span><span class="p">)</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="n">database</span><span class="p">,</span>
+            <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>    <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;query&#39;</span><span class="p">:</span>    <span class="n">query</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">status</span><span class="p">:</span>
@@ -1147,6 +1167,7 @@ in Python programs.</p>
 
     <span class="k">def</span> <span class="nf">fetch_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
                        <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">orcid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                        <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                        <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
                        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">JsonResource</span><span class="p">]:</span>
@@ -1156,6 +1177,7 @@ in Python programs.</p>
 
 <span class="sd">Args:</span>
 <span class="sd">    database: A string containing the name of the database to search.</span>
+<span class="sd">    orcid: An ORCID for the user requesting the metadata.</span>
 <span class="sd">    ids: A list containing file identifiers for which metadata is retrieved.</span>
 <span class="sd">    offset: An optional 0-based pagination index from which to start retrieving results (default: 0).</span>
 <span class="sd">    limit: An optional pagination parameter indicating the maximum number of results to retrieve.</span>
@@ -1174,8 +1196,11 @@ in Python programs.</p>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;search: missing or invalid file IDs.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: database must be a string.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orcid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: orcid must be a string.&#39;</span><span class="p">)</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="n">database</span><span class="p">,</span>
+            <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>    <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;ids&#39;</span><span class="p">:</span>    <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">offset</span><span class="p">:</span>
@@ -1204,6 +1229,7 @@ in Python programs.</p>
         <span class="k">return</span> <span class="p">[</span><span class="n">JsonResource</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;resources&#39;</span><span class="p">]]</span>
 
     <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
+                 <span class="n">orcid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">file_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                  <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1215,6 +1241,7 @@ in Python programs.</p>
 <span class="sd">Server-side errors are intercepted and logged.</span>
 
 <span class="sd">Args:</span>
+<span class="sd">    orcid: An ORCID for the user requesting the transfer.</span>
 <span class="sd">    file_ids: A list of identifiers for files to be transferred.</span>
 <span class="sd">    source: The name of the database from which files are transferred.</span>
 <span class="sd">    destination: The name of the database to which files are transferred.</span>
@@ -1236,6 +1263,8 @@ in Python programs.</p>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: source database name must be a string.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: destination database name must be a string.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orcid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: orcid must be a string.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_ids</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: file_ids must be a list of string file IDs.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">timeout</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
@@ -1245,6 +1274,7 @@ in Python programs.</p>
         <span class="k">if</span> <span class="n">instructions</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instructions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: instructions must be a dict representing a JSON object containing machine-readable instructions for processing the payload at its destination.&#39;</span><span class="p">)</span>
         <span class="n">json_obj</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>       <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;source&#39;</span><span class="p">:</span>      <span class="n">source</span><span class="p">,</span>
             <span class="s1">&#39;destination&#39;</span><span class="p">:</span> <span class="n">destination</span><span class="p">,</span>
             <span class="s1">&#39;file_ids&#39;</span><span class="p">:</span>    <span class="n">file_ids</span><span class="p">,</span>
@@ -1641,22 +1671,7 @@ cancellation can be seen.</p>
 
             <details class="quote">
               <summary>Source code in <code>dts/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">391</span>
 <span class="normal">392</span>
 <span class="normal">393</span>
 <span class="normal">394</span>
@@ -1668,7 +1683,22 @@ cancellation can be seen.</p>
 <span class="normal">400</span>
 <span class="normal">401</span>
 <span class="normal">402</span>
-<span class="normal">403</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">cancel_transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">cancel_transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
                         <span class="nb">id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancels a file transfer with the requested UUID.</span>
 
@@ -2017,7 +2047,7 @@ cancellation can be seen.</p>
 
 
 <h3 id="dts.Client.fetch_metadata" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">fetch_metadata</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">fetch_metadata</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="n">orcid</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -2049,6 +2079,22 @@ cancellation can be seen.</p>
             <td>
               <div class="doc-md-description">
                 <p>A string containing the name of the database to search.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>orcid</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An ORCID for the user requesting the metadata.</p>
               </div>
             </td>
             <td>
@@ -2174,12 +2220,7 @@ cancellation can be seen.</p>
 
             <details class="quote">
               <summary>Source code in <code>dts/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
@@ -2230,8 +2271,19 @@ cancellation can be seen.</p>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
-<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">fetch_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">fetch_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
                        <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">orcid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                        <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                        <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
                        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">JsonResource</span><span class="p">]:</span>
@@ -2241,6 +2293,7 @@ cancellation can be seen.</p>
 
 <span class="sd">Args:</span>
 <span class="sd">    database: A string containing the name of the database to search.</span>
+<span class="sd">    orcid: An ORCID for the user requesting the metadata.</span>
 <span class="sd">    ids: A list containing file identifiers for which metadata is retrieved.</span>
 <span class="sd">    offset: An optional 0-based pagination index from which to start retrieving results (default: 0).</span>
 <span class="sd">    limit: An optional pagination parameter indicating the maximum number of results to retrieve.</span>
@@ -2259,8 +2312,11 @@ cancellation can be seen.</p>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;search: missing or invalid file IDs.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: database must be a string.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orcid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: orcid must be a string.&#39;</span><span class="p">)</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="n">database</span><span class="p">,</span>
+            <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>    <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;ids&#39;</span><span class="p">:</span>    <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">offset</span><span class="p">:</span>
@@ -2297,7 +2353,7 @@ cancellation can be seen.</p>
 
 
 <h3 id="dts.Client.search" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">search</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specific</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">search</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="n">orcid</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specific</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -2329,6 +2385,22 @@ cancellation can be seen.</p>
             <td>
               <div class="doc-md-description">
                 <p>A string containing the name of the database to search.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>orcid</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An ORCID for the user searching for files.</p>
               </div>
             </td>
             <td>
@@ -2559,8 +2631,14 @@ cancellation can be seen.</p>
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
-<span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
                <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+               <span class="n">orcid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
                <span class="n">status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -2573,6 +2651,7 @@ cancellation can be seen.</p>
 
 <span class="sd">Args:</span>
 <span class="sd">    database: A string containing the name of the database to search.</span>
+<span class="sd">    orcid: An ORCID for the user searching for files.</span>
 <span class="sd">    query: A search string that is directly interpreted by the database.</span>
 <span class="sd">    status: An optional string (`&quot;staged&quot;` or `&quot;unstaged&quot;`) indicating whether files are filtered based on their status.</span>
 <span class="sd">    offset: An optional 0-based pagination index indicating the first retrieved result (default: 0).</span>
@@ -2589,6 +2668,8 @@ cancellation can be seen.</p>
 <span class="sd">&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;dts.Client: not connected.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orcid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: orcid must be a string.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># we also accept numeric values</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
@@ -2599,6 +2680,7 @@ cancellation can be seen.</p>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: database must be a string.&#39;</span><span class="p">)</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="n">database</span><span class="p">,</span>
+            <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>    <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;query&#39;</span><span class="p">:</span>    <span class="n">query</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">status</span><span class="p">:</span>
@@ -2643,7 +2725,7 @@ cancellation can be seen.</p>
 
 
 <h3 id="dts.Client.transfer" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">transfer</span><span class="p">(</span><span class="n">file_ids</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">transfer</span><span class="p">(</span><span class="n">orcid</span><span class="p">,</span> <span class="n">file_ids</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -2665,6 +2747,22 @@ cancellation can be seen.</p>
         </tr>
       </thead>
       <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>orcid</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An ORCID for the user requesting the transfer.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
           <tr class="doc-section-item">
             <td>
                 <code>file_ids</code>
@@ -2832,17 +2930,7 @@ cancellation can be seen.</p>
 
             <details class="quote">
               <summary>Source code in <code>dts/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
@@ -2894,7 +2982,23 @@ cancellation can be seen.</p>
 <span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
-<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
+                 <span class="n">orcid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">file_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                  <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2906,6 +3010,7 @@ cancellation can be seen.</p>
 <span class="sd">Server-side errors are intercepted and logged.</span>
 
 <span class="sd">Args:</span>
+<span class="sd">    orcid: An ORCID for the user requesting the transfer.</span>
 <span class="sd">    file_ids: A list of identifiers for files to be transferred.</span>
 <span class="sd">    source: The name of the database from which files are transferred.</span>
 <span class="sd">    destination: The name of the database to which files are transferred.</span>
@@ -2927,6 +3032,8 @@ cancellation can be seen.</p>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: source database name must be a string.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: destination database name must be a string.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orcid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: orcid must be a string.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_ids</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: file_ids must be a list of string file IDs.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">timeout</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
@@ -2936,6 +3043,7 @@ cancellation can be seen.</p>
         <span class="k">if</span> <span class="n">instructions</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instructions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: instructions must be a dict representing a JSON object containing machine-readable instructions for processing the payload at its destination.&#39;</span><span class="p">)</span>
         <span class="n">json_obj</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>       <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;source&#39;</span><span class="p">:</span>      <span class="n">source</span><span class="p">,</span>
             <span class="s1">&#39;destination&#39;</span><span class="p">:</span> <span class="n">destination</span><span class="p">,</span>
             <span class="s1">&#39;file_ids&#39;</span><span class="p">:</span>    <span class="n">file_ids</span><span class="p">,</span>
@@ -3086,22 +3194,7 @@ cancellation can be seen.</p>
 
             <details class="quote">
               <summary>Source code in <code>dts/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
 <span class="normal">344</span>
 <span class="normal">345</span>
 <span class="normal">346</span>
@@ -3132,7 +3225,22 @@ cancellation can be seen.</p>
 <span class="normal">371</span>
 <span class="normal">372</span>
 <span class="normal">373</span>
-<span class="normal">374</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">transfer_status</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">transfer_status</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
                         <span class="nb">id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferStatus</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns status information for the transfer with the given identifier.</span>
 
