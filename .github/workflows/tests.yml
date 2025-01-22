@@ -40,6 +40,7 @@ jobs:
         run: uv run --dev coverage run -m unittest discover
         env:
           DTS_KBASE_DEV_TOKEN: ${{ secrets.DTS_KBASE_DEV_TOKEN }}
+          DTS_KBASE_TEST_ORCID: ${{ secrets.DTS_KBASE_TEST_ORCID }}
 
       # add this when ready
       #- if: ${{ matrix.os == 'ubuntu-latest' }}
