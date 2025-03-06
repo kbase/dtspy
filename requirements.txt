@@ -1,7 +1,7 @@
 annotated-types==0.7.0
 attrs==23.2.0
 babel==2.16.0
-certifi==2024.2.2
+certifi==2024.7.4
 chardet==5.2.0
 charset-normalizer==3.3.2
 click==8.1.7
@@ -13,7 +13,7 @@ griffe==1.4.1
 humanize==4.9.0
 idna==3.7
 isodate==0.6.1
-Jinja2==3.1.4
+Jinja2==3.1.6
 jsonschema==4.22.0
 jsonschema-specifications==2023.12.1
 Markdown==3.7
