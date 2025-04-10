@@ -8,7 +8,7 @@ from . import (
     Database,
     TransferStatus,
 )
-from urllib.error import (
+from requests.exceptions import (
     HTTPError,
 )
 from typing import Any
@@ -34,7 +34,7 @@ This type exposes the [DTS API](https://lb-dts.staging.kbase.us/docs#/) for use
 in Python programs.
 """
     def __init__(self: "Client",
-                 api_key: str | None = None, 
+                 api_key: str | None = None,
                  server: str | None = None,
                  port: int | None = None) -> None:
         """Creates a DTS client that handles search and transfer requests via
@@ -117,7 +117,7 @@ Returns:
             response = requests.get(self.uri + '/databases', auth = self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
-            logger.error(f'HTTP error occurred: {http_err}')
+            logger.error(f'HTTP error occurred: {http_err.response.json()}')
             return []
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -200,8 +200,8 @@ Raises:
                                      json=params,
                                      auth=self.auth)
             response.raise_for_status()
-        except (HTTPError, requests.exceptions.HTTPError) as err:
-            logger.error(f'HTTP error occurred: {err}')
+        except HTTPError as http_err:
+            logger.error(f'HTTP error occurred: {http_err.response.json()}')
             return []
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -263,8 +263,8 @@ Raises:
                                     params=params,
                                     auth=self.auth)
             response.raise_for_status()
-        except (HTTPError, requests.exceptions.HTTPError) as err:
-            logger.error(f'HTTP error occurred: {err}')
+        except HTTPError as http_err:
+            logger.error(f'HTTP error occurred: {http_err.response.json()}')
             return []
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -332,8 +332,8 @@ Raises:
                                      auth=self.auth,
                                      timeout=timeout)
             response.raise_for_status()
-        except (HTTPError, requests.exceptions.HTTPError) as err:
-            logger.error(f'HTTP error occurred: {err}')
+        except HTTPError  as http_err:
+            logger.error(f'HTTP error occurred: {http_err.response.json()}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -373,8 +373,8 @@ Raises:
             response = requests.get(url=f'{self.uri}/transfers/{id}',
                                     auth=self.auth)
             response.raise_for_status()
-        except (HTTPError, requests.exceptions.HTTPError) as err:
-            logger.error(f'HTTP error occurred: {err}')
+        except HTTPError as http_err:
+            logger.error(f'HTTP error occurred: {http_err.response.json()}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -409,8 +409,8 @@ Raises:
             response = requests.delete(url=f'{self.uri}/transfers/{id}',
                                        auth=self.auth)
             response.raise_for_status()
-        except (HTTPError, requests.exceptions.HTTPError) as err:
-            logger.error(f'HTTP error occurred: {err}')
+        except HTTPError as http_err:
+            logger.error(f'HTTP error occurred: {http_err.response.json()}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
