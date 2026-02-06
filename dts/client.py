@@ -389,7 +389,8 @@ Raises:
         )
 
     def cancel_transfer(self: "Client",
-                        id: uuid.UUID) -> None:
+                        id: uuid.UUID,
+                        orcid: str) -> None:
         """Cancels a file transfer with the requested UUID.
 
 Status information for the cancelled transfer is retained for a time so its
@@ -397,6 +398,7 @@ cancellation can be seen.
 
 Args:
     id: A UUID that uniquely identifies the transfer operation to be cancelled.
+    orcid: The ORCID of the user that initiated the transfer.
 
 Raises:
     RuntimeError: Indicates an issue with the DTS client and its connection to the server.
@@ -406,7 +408,7 @@ Raises:
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
         try:
-            response = requests.delete(url=f'{self.uri}/transfers/{id}',
+            response = requests.delete(url=f'{self.uri}/transfers/{id}?orcid={orcid}',
                                        auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
