@@ -12,7 +12,7 @@ class TestClient(unittest.TestCase):
         if not self.token:
             raise ValueError('Environment variable DTS_KBASE_DEV_TOKEN must be set!')
         self.orcid = os.getenv('DTS_KBASE_TEST_ORCID')
-        self.server = "https://lb-dts.staging.kbase.us"
+        self.server = "https://dts.kbase.us"
 
     def test_ctor(self):
         client = dts.Client(api_key = self.token, server = self.server)
