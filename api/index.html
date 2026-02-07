@@ -984,7 +984,9 @@ in Python programs.</p>
 <span class="normal">424</span>
 <span class="normal">425</span>
 <span class="normal">426</span>
-<span class="normal">427</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;`dts.Client`: A client for performing file transfers with the Data Transfer System (DTS).</span>
 
 <span class="sd">This type exposes the [DTS API](https://lb-dts.staging.kbase.us/docs#/) for use</span>
@@ -1346,7 +1348,8 @@ in Python programs.</p>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">cancel_transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
-                        <span class="nb">id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="nb">id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">,</span>
+                        <span class="n">orcid</span><span class="p">:</span> <span class="n">string</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancels a file transfer with the requested UUID.</span>
 
 <span class="sd">Status information for the cancelled transfer is retained for a time so its</span>
@@ -1354,6 +1357,7 @@ in Python programs.</p>
 
 <span class="sd">Args:</span>
 <span class="sd">    id: A UUID that uniquely identifies the transfer operation to be cancelled.</span>
+<span class="sd">    orcid: The ORCID of the user that initiated the transfer.</span>
 
 <span class="sd">Raises:</span>
 <span class="sd">    RuntimeError: Indicates an issue with the DTS client and its connection to the server.</span>
@@ -1363,7 +1367,7 @@ in Python programs.</p>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;dts.Client: not connected.&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/transfers/</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/transfers/</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">?orcid=</span><span class="si">{</span><span class="n">orcid</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                                        <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
             <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">HTTPError</span> <span class="k">as</span> <span class="n">http_err</span><span class="p">:</span>
@@ -1584,7 +1588,7 @@ a connected server.</p>
 
 
 <h3 id="dts.Client.cancel_transfer" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">cancel_transfer</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">cancel_transfer</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">orcid</span><span class="p">)</span></code>
 
 </h3>
 
@@ -1617,6 +1621,22 @@ cancellation can be seen.</p>
             <td>
               <div class="doc-md-description">
                 <p>A UUID that uniquely identifies the transfer operation to be cancelled.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>orcid</code>
+            </td>
+            <td>
+                  <code>string</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The ORCID of the user that initiated the transfer.</p>
               </div>
             </td>
             <td>
@@ -1698,8 +1718,11 @@ cancellation can be seen.</p>
 <span class="normal">415</span>
 <span class="normal">416</span>
 <span class="normal">417</span>
-<span class="normal">418</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">cancel_transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
-                        <span class="nb">id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">cancel_transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
+                        <span class="nb">id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">,</span>
+                        <span class="n">orcid</span><span class="p">:</span> <span class="n">string</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancels a file transfer with the requested UUID.</span>
 
 <span class="sd">Status information for the cancelled transfer is retained for a time so its</span>
@@ -1707,6 +1730,7 @@ cancellation can be seen.</p>
 
 <span class="sd">Args:</span>
 <span class="sd">    id: A UUID that uniquely identifies the transfer operation to be cancelled.</span>
+<span class="sd">    orcid: The ORCID of the user that initiated the transfer.</span>
 
 <span class="sd">Raises:</span>
 <span class="sd">    RuntimeError: Indicates an issue with the DTS client and its connection to the server.</span>
@@ -1716,7 +1740,7 @@ cancellation can be seen.</p>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;dts.Client: not connected.&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/transfers/</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/transfers/</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">?orcid=</span><span class="si">{</span><span class="n">orcid</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                                        <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
             <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">HTTPError</span> <span class="k">as</span> <span class="n">http_err</span><span class="p">:</span>
