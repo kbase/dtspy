@@ -117,7 +117,10 @@ Returns:
             response = requests.get(self.uri + '/databases', auth = self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
-            logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            try:
+                logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            except:
+                logger.error(f'HTTP error occurred: {http_err.response}')
             return []
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -201,7 +204,10 @@ Raises:
                                      auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
-            logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            try:
+                logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            except:
+                logger.error(f'HTTP error occurred: {http_err.response}')
             return []
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -264,7 +270,10 @@ Raises:
                                     auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
-            logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            try:
+                logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            except:
+                logger.error(f'HTTP error occurred: {http_err.response}')
             return []
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -332,8 +341,11 @@ Raises:
                                      auth=self.auth,
                                      timeout=timeout)
             response.raise_for_status()
-        except HTTPError  as http_err:
-            logger.error(f'HTTP error occurred: {http_err.response.json()}')
+        except HTTPError as http_err:
+            try:
+                logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            except:
+                logger.error(f'HTTP error occurred: {http_err.response}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -374,7 +386,10 @@ Raises:
                                     auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
-            logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            try:
+                logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            except:
+                logger.error(f'HTTP error occurred: {http_err.response}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
@@ -412,7 +427,10 @@ Raises:
                                        auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
-            logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            try:
+                logger.error(f'HTTP error occurred: {http_err.response.json()}')
+            except:
+                logger.error(f'HTTP error occurred: {http_err.response}')
             return None
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
