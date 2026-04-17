@@ -1150,7 +1150,7 @@ in Python programs.</p>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: query must be a string or a number.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: database must be a string.&#39;</span><span class="p">)</span>
-        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="n">database</span><span class="p">,</span>
             <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>    <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;query&#39;</span><span class="p">:</span>    <span class="n">query</span><span class="p">,</span>
@@ -1158,26 +1158,26 @@ in Python programs.</p>
         <span class="k">if</span> <span class="n">status</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;staged&#39;</span><span class="p">,</span> <span class="s1">&#39;unstaged&#39;</span><span class="p">]:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: invalid status: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">status</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">status</span>
         <span class="k">if</span> <span class="n">offset</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: offset must be numeric&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: offset must be non-negative&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: limit must be numeric&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: limit must be greater than 1&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">specific</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">specific</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: specific must be a dict.&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;specific&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">specific</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;specific&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">specific</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/files&#39;</span><span class="p">,</span>
-                                     <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                                     <span class="n">json</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
                                      <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
             <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">HTTPError</span> <span class="k">as</span> <span class="n">http_err</span><span class="p">:</span>
@@ -1224,7 +1224,7 @@ in Python programs.</p>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: database must be a string.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orcid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: orcid must be a string.&#39;</span><span class="p">)</span>
-        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="n">database</span><span class="p">,</span>
             <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>    <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;ids&#39;</span><span class="p">:</span>    <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span>
@@ -1234,17 +1234,17 @@ in Python programs.</p>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: offset must be numeric&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: offset must be non-negative&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: limit must be numeric&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: limit must be greater than 1&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/files/by-id&#39;</span><span class="p">,</span>
-                                    <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                                    <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/files/by-id&#39;</span><span class="p">,</span>
+                                     <span class="n">json</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                                     <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
             <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">HTTPError</span> <span class="k">as</span> <span class="n">http_err</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -1302,19 +1302,19 @@ in Python programs.</p>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: description must be a string containing Markdown.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">instructions</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instructions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: instructions must be a dict representing a JSON object containing machine-readable instructions for processing the payload at its destination.&#39;</span><span class="p">)</span>
-        <span class="n">json_obj</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>       <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;source&#39;</span><span class="p">:</span>      <span class="n">source</span><span class="p">,</span>
             <span class="s1">&#39;destination&#39;</span><span class="p">:</span> <span class="n">destination</span><span class="p">,</span>
             <span class="s1">&#39;file_ids&#39;</span><span class="p">:</span>    <span class="n">file_ids</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
-            <span class="n">json_obj</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
         <span class="k">if</span> <span class="n">instructions</span><span class="p">:</span>
-            <span class="n">json_obj</span><span class="p">[</span><span class="s1">&#39;instructions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">instructions</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;instructions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">instructions</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/transfers&#39;</span><span class="p">,</span>
-                                     <span class="n">json</span><span class="o">=</span><span class="n">json_obj</span><span class="p">,</span>
+                                     <span class="n">json</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
                                      <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">,</span>
                                      <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
             <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
@@ -2389,7 +2389,7 @@ cancellation can be seen.</p>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: database must be a string.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orcid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: orcid must be a string.&#39;</span><span class="p">)</span>
-        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="n">database</span><span class="p">,</span>
             <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>    <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;ids&#39;</span><span class="p">:</span>    <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span>
@@ -2399,17 +2399,17 @@ cancellation can be seen.</p>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: offset must be numeric&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: offset must be non-negative&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: limit must be numeric&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: limit must be greater than 1&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/files/by-id&#39;</span><span class="p">,</span>
-                                    <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                                    <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/files/by-id&#39;</span><span class="p">,</span>
+                                     <span class="n">json</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                                     <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
             <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">HTTPError</span> <span class="k">as</span> <span class="n">http_err</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -2759,7 +2759,7 @@ cancellation can be seen.</p>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: query must be a string or a number.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: database must be a string.&#39;</span><span class="p">)</span>
-        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="n">database</span><span class="p">,</span>
             <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>    <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;query&#39;</span><span class="p">:</span>    <span class="n">query</span><span class="p">,</span>
@@ -2767,26 +2767,26 @@ cancellation can be seen.</p>
         <span class="k">if</span> <span class="n">status</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;staged&#39;</span><span class="p">,</span> <span class="s1">&#39;unstaged&#39;</span><span class="p">]:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: invalid status: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">status</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">status</span>
         <span class="k">if</span> <span class="n">offset</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: offset must be numeric&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: offset must be non-negative&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: limit must be numeric&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;search: limit must be greater than 1&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">specific</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">specific</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;search: specific must be a dict.&#39;</span><span class="p">)</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;specific&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">specific</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;specific&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">specific</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/files&#39;</span><span class="p">,</span>
-                                     <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                                     <span class="n">json</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
                                      <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
             <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">HTTPError</span> <span class="k">as</span> <span class="n">http_err</span><span class="p">:</span>
@@ -3129,19 +3129,19 @@ cancellation can be seen.</p>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: description must be a string containing Markdown.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">instructions</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instructions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;transfer: instructions must be a dict representing a JSON object containing machine-readable instructions for processing the payload at its destination.&#39;</span><span class="p">)</span>
-        <span class="n">json_obj</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;orcid&#39;</span><span class="p">:</span>       <span class="n">orcid</span><span class="p">,</span>
             <span class="s1">&#39;source&#39;</span><span class="p">:</span>      <span class="n">source</span><span class="p">,</span>
             <span class="s1">&#39;destination&#39;</span><span class="p">:</span> <span class="n">destination</span><span class="p">,</span>
             <span class="s1">&#39;file_ids&#39;</span><span class="p">:</span>    <span class="n">file_ids</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
-            <span class="n">json_obj</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
         <span class="k">if</span> <span class="n">instructions</span><span class="p">:</span>
-            <span class="n">json_obj</span><span class="p">[</span><span class="s1">&#39;instructions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">instructions</span>
+            <span class="n">body</span><span class="p">[</span><span class="s1">&#39;instructions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">instructions</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/transfers&#39;</span><span class="p">,</span>
-                                     <span class="n">json</span><span class="o">=</span><span class="n">json_obj</span><span class="p">,</span>
+                                     <span class="n">json</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
                                      <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">,</span>
                                      <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
             <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
