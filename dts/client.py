@@ -173,7 +173,7 @@ Raises:
                 raise TypeError('search: query must be a string or a number.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
-        params: dict[str, Any] = {
+        body = {
             'database': database,
             'orcid':    orcid,
             'query':    query,
@@ -181,26 +181,26 @@ Raises:
         if status:
             if status not in ['staged', 'unstaged']:
                 raise TypeError(f'search: invalid status: {status}.')
-            params['status'] = status
+            body['status'] = status
         if offset:
             if not str(offset).isdigit():
                 raise TypeError('search: offset must be numeric')
             if int(offset) < 0:
                 raise ValueError(f'search: offset must be non-negative')
-            params['offset'] = int(offset)
+            body['offset'] = int(offset)
         if limit:
             if not str(limit).isdigit():
                 raise TypeError('search: limit must be numeric')
             if int(limit) < 1:
                 raise ValueError(f'search: limit must be greater than 1')
-            params['limit'] = int(limit)
+            body['limit'] = int(limit)
         if specific:
             if not isinstance(specific, dict):
                 raise TypeError('search: specific must be a dict.')
-            params['specific'] = specific
+            body['specific'] = specific
         try:
             response = requests.post(url=f'{self.uri}/files',
-                                     json=params,
+                                     json=body,
                                      auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
@@ -247,7 +247,7 @@ Raises:
             raise TypeError('search: database must be a string.')
         if not isinstance(orcid, str):
             raise TypeError('search: orcid must be a string.')
-        params: dict[str, Any] = {
+        body = {
             'database': database,
             'orcid':    orcid,
             'ids':    ','.join(ids),
@@ -257,17 +257,17 @@ Raises:
                 raise TypeError('search: offset must be numeric')
             if int(offset) < 0:
                 raise ValueError(f'search: offset must be non-negative')
-            params['offset'] = int(offset)
+            body['offset'] = int(offset)
         if limit:
             if not str(limit).isdigit():
                 raise TypeError('search: limit must be numeric')
             if int(limit) < 1:
                 raise ValueError(f'search: limit must be greater than 1')
-            params['limit'] = int(limit)
+            body['limit'] = int(limit)
         try:
-            response = requests.get(url=f'{self.uri}/files/by-id',
-                                    params=params,
-                                    auth=self.auth)
+            response = requests.post(url=f'{self.uri}/files/by-id',
+                                     json=body,
+                                     auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
             try:
@@ -325,19 +325,19 @@ Raises:
             raise TypeError('transfer: description must be a string containing Markdown.')
         if instructions and not isinstance(instructions, dict):
             raise TypeError('transfer: instructions must be a dict representing a JSON object containing machine-readable instructions for processing the payload at its destination.')
-        json_obj = {
+        body = {
             'orcid':       orcid,
             'source':      source,
             'destination': destination,
             'file_ids':    file_ids,
         }
         if description:
-            json_obj['description'] = description
+            body['description'] = description
         if instructions:
-            json_obj['instructions'] = instructions
+            body['instructions'] = instructions
         try:
             response = requests.post(url=f'{self.uri}/transfers',
-                                     json=json_obj,
+                                     json=body,
                                      auth=self.auth,
                                      timeout=timeout)
             response.raise_for_status()
