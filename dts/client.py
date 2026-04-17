@@ -217,7 +217,7 @@ Raises:
     def fetch_metadata(self: "Client",
                        database: str,
                        orcid: str,
-                       ids: list[str],
+                       file_ids: list[str],
                        offset: int = 0,
                        limit: int | None = None) -> list[JsonResource]:
         """Fetches metadata for the files with the specified IDs within the specified database.
@@ -227,7 +227,7 @@ Server-side errors are intercepted and logged.
 Args:
     database: A string containing the name of the database to search.
     orcid: An ORCID for the user requesting the metadata.
-    ids: A list containing file identifiers for which metadata is retrieved.
+    file_ids: A list containing file identifiers for which metadata is retrieved.
     offset: An optional 0-based pagination index from which to start retrieving results (default: 0).
     limit: An optional pagination parameter indicating the maximum number of results to retrieve.
 
@@ -241,7 +241,7 @@ Raises:
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
-        if not isinstance(ids, list) or len(ids) == 0:
+        if not isinstance(file_ids, list) or len(file_ids) == 0:
             raise RuntimeError('search: missing or invalid file IDs.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
@@ -250,7 +250,7 @@ Raises:
         body = {
             'database': database,
             'orcid':    orcid,
-            'ids':    ','.join(ids),
+            'file_ids': file_ids,
         }
         if offset:
             if not str(offset).isdigit():
