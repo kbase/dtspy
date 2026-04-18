@@ -68,9 +68,9 @@ class TestClient(unittest.TestCase):
         client = dts.Client(api_key = self.token, server = self.server)
         resources = client.fetch_metadata(database = 'jdp',
                                           orcid = self.orcid,
-                                          ids = ['JDP:6101cc0f2b1f2eeea564c978',
-                                                 'JDP:613a7baa72d3a08c9a54b32d',
-                                                 'JDP:61412246cc4ff44f36c8913d'])
+                                          file_ids = ['JDP:6101cc0f2b1f2eeea564c978',
+                                                      'JDP:613a7baa72d3a08c9a54b32d',
+                                                      'JDP:61412246cc4ff44f36c8913d'])
         self.assertTrue(isinstance(resources, list))
         self.assertTrue(len(resources) == 3)
         resources = [r.to_dict() for r in resources]
