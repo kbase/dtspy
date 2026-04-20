@@ -173,7 +173,7 @@ Raises:
                 raise TypeError('search: query must be a string or a number.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
-        params: dict[str, Any] = {
+        body = {
             'database': database,
             'orcid':    orcid,
             'query':    query,
@@ -181,26 +181,26 @@ Raises:
         if status:
             if status not in ['staged', 'unstaged']:
                 raise TypeError(f'search: invalid status: {status}.')
-            params['status'] = status
+            body['status'] = status
         if offset:
             if not str(offset).isdigit():
                 raise TypeError('search: offset must be numeric')
             if int(offset) < 0:
                 raise ValueError(f'search: offset must be non-negative')
-            params['offset'] = int(offset)
+            body['offset'] = int(offset)
         if limit:
             if not str(limit).isdigit():
                 raise TypeError('search: limit must be numeric')
             if int(limit) < 1:
                 raise ValueError(f'search: limit must be greater than 1')
-            params['limit'] = int(limit)
+            body['limit'] = int(limit)
         if specific:
             if not isinstance(specific, dict):
                 raise TypeError('search: specific must be a dict.')
-            params['specific'] = specific
+            body['specific'] = specific
         try:
             response = requests.post(url=f'{self.uri}/files',
-                                     json=params,
+                                     json=body,
                                      auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
@@ -217,7 +217,7 @@ Raises:
     def fetch_metadata(self: "Client",
                        database: str,
                        orcid: str,
-                       ids: list[str],
+                       file_ids: list[str],
                        offset: int = 0,
                        limit: int | None = None) -> list[JsonResource]:
         """Fetches metadata for the files with the specified IDs within the specified database.
@@ -227,7 +227,7 @@ Server-side errors are intercepted and logged.
 Args:
     database: A string containing the name of the database to search.
     orcid: An ORCID for the user requesting the metadata.
-    ids: A list containing file identifiers for which metadata is retrieved.
+    file_ids: A list containing file identifiers for which metadata is retrieved.
     offset: An optional 0-based pagination index from which to start retrieving results (default: 0).
     limit: An optional pagination parameter indicating the maximum number of results to retrieve.
 
@@ -241,33 +241,33 @@ Raises:
 """
         if not self.uri:
             raise RuntimeError('dts.Client: not connected.')
-        if not isinstance(ids, list) or len(ids) == 0:
+        if not isinstance(file_ids, list) or len(file_ids) == 0:
             raise RuntimeError('search: missing or invalid file IDs.')
         if not isinstance(database, str):
             raise TypeError('search: database must be a string.')
         if not isinstance(orcid, str):
             raise TypeError('search: orcid must be a string.')
-        params: dict[str, Any] = {
+        body = {
             'database': database,
             'orcid':    orcid,
-            'ids':    ','.join(ids),
+            'file_ids': file_ids,
         }
         if offset:
             if not str(offset).isdigit():
                 raise TypeError('search: offset must be numeric')
             if int(offset) < 0:
                 raise ValueError(f'search: offset must be non-negative')
-            params['offset'] = int(offset)
+            body['offset'] = int(offset)
         if limit:
             if not str(limit).isdigit():
                 raise TypeError('search: limit must be numeric')
             if int(limit) < 1:
                 raise ValueError(f'search: limit must be greater than 1')
-            params['limit'] = int(limit)
+            body['limit'] = int(limit)
         try:
-            response = requests.get(url=f'{self.uri}/files/by-id',
-                                    params=params,
-                                    auth=self.auth)
+            response = requests.post(url=f'{self.uri}/files/by-id',
+                                     json=body,
+                                     auth=self.auth)
             response.raise_for_status()
         except HTTPError as http_err:
             try:
@@ -325,19 +325,19 @@ Raises:
             raise TypeError('transfer: description must be a string containing Markdown.')
         if instructions and not isinstance(instructions, dict):
             raise TypeError('transfer: instructions must be a dict representing a JSON object containing machine-readable instructions for processing the payload at its destination.')
-        json_obj = {
+        body = {
             'orcid':       orcid,
             'source':      source,
             'destination': destination,
             'file_ids':    file_ids,
         }
         if description:
-            json_obj['description'] = description
+            body['description'] = description
         if instructions:
-            json_obj['instructions'] = instructions
+            body['instructions'] = instructions
         try:
             response = requests.post(url=f'{self.uri}/transfers',
-                                     json=json_obj,
+                                     json=body,
                                      auth=self.auth,
                                      timeout=timeout)
             response.raise_for_status()
