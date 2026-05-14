@@ -1111,7 +1111,7 @@ in Python programs.</p>
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
                <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                <span class="n">orcid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-               <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
+               <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                <span class="n">status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
                <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1124,7 +1124,7 @@ in Python programs.</p>
 <span class="sd">Args:</span>
 <span class="sd">    database: A string containing the name of the database to search.</span>
 <span class="sd">    orcid: An ORCID for the user searching for files.</span>
-<span class="sd">    query: A search string that is directly interpreted by the database.</span>
+<span class="sd">    query: An optional search string that is directly interpreted by the database.</span>
 <span class="sd">    status: An optional string (`&quot;staged&quot;` or `&quot;unstaged&quot;`) indicating whether files are filtered based on their status.</span>
 <span class="sd">    offset: An optional 0-based pagination index indicating the first retrieved result (default: 0).</span>
 <span class="sd">    limit: An optional pagination parameter indicating the maximum number of results to retrieve.</span>
@@ -2431,7 +2431,7 @@ cancellation can be seen.</p>
 
 
 <h3 id="dts.Client.search" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">search</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="n">orcid</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specific</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">search</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="n">orcid</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specific</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -2494,11 +2494,11 @@ cancellation can be seen.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>A search string that is directly interpreted by the database.</p>
+                <p>An optional search string that is directly interpreted by the database.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>&#39;&#39;</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2720,7 +2720,7 @@ cancellation can be seen.</p>
 <span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
                <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                <span class="n">orcid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-               <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
+               <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                <span class="n">status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
                <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2733,7 +2733,7 @@ cancellation can be seen.</p>
 <span class="sd">Args:</span>
 <span class="sd">    database: A string containing the name of the database to search.</span>
 <span class="sd">    orcid: An ORCID for the user searching for files.</span>
-<span class="sd">    query: A search string that is directly interpreted by the database.</span>
+<span class="sd">    query: An optional search string that is directly interpreted by the database.</span>
 <span class="sd">    status: An optional string (`&quot;staged&quot;` or `&quot;unstaged&quot;`) indicating whether files are filtered based on their status.</span>
 <span class="sd">    offset: An optional 0-based pagination index indicating the first retrieved result (default: 0).</span>
 <span class="sd">    limit: An optional pagination parameter indicating the maximum number of results to retrieve.</span>
