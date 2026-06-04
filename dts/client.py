@@ -134,7 +134,7 @@ Returns:
     def search(self: "Client",
                database: str,
                orcid: str,
-               query: str | int | float,
+               query: str | int | float = '',
                status: str | None = None,
                offset: int = 0,
                limit: int | None = None,
@@ -147,7 +147,7 @@ This method searches the indicated database for files that can be transferred.
 Args:
     database: A string containing the name of the database to search.
     orcid: An ORCID for the user searching for files.
-    query: A search string that is directly interpreted by the database.
+    query: An optional search string that is directly interpreted by the database.
     status: An optional string (`"staged"` or `"unstaged"`) indicating whether files are filtered based on their status.
     offset: An optional 0-based pagination index indicating the first retrieved result (default: 0).
     limit: An optional pagination parameter indicating the maximum number of results to retrieve.
